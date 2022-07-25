@@ -23,27 +23,18 @@
   <div class="message-header"><p>Instructions</p></div>
   <div class="message-body">
         <div class="content">
-        La <strong>file</strong> est composée d'éléments posés les uns à la suite des autres, à la queue-leu-leu. Elle propose trois fonctionnalités.
+        La <strong>file</strong> est composée d'éléments posés les uns à la suite 
+        des autres, à la queue-leu-leu. Elle propose deux fonctionnalités :
         <ul>
-        <li><strong>Vider</strong> la file consiste à enlever tous les éléments de la file, s'il y en a. On obtient une file vide.</li>
-        <li><strong>Ajouter</strong> un élément <em>à la fin de la file</em>, on dit <strong>enfiler</strong>.</li>
+        <li><strong>Ajouter</strong> un élément <em>à la fin de la file</em>, on dit <strong>enfiler</strong>. 
+        Pour enfiler un élément, cliquez sur lui </li><div class="block" id="boutons"></div>
         <li><strong>Défiler</strong>, c'est-à-dire enlever l'élément qui est <em>au début</em> de la file.</li>
         </ul>
-        Vous pouvez créer ou modifier votre propre file en cliquant sur les boutons ci-dessous.
+            <div class="buttons is-flex is-justify-content-center">
+                <button class="button" onclick="p.defiler()" value="defiler"><span class="icon">↤</span><span>Défiler</span></button>
+            </div> 
         </div>
         <div class="content">Dans ce document, nous lirons les files de gauche à droite : le premier élément est à gauche et le dernier à droite.</div>
-        <div class="box">
-        <div class="buttons is-flex is-justify-content-center">
-         <button class="button" onclick="p.vider()"><span class="icon">
-      🗑
-    </span>
-    <span>Vider</span></button>
-         <button class="button" onclick="p.defiler()"><span class="icon">↤</span><span>Défiler</span></button>
-         <button class="button is-static"><span class="icon">⇤</span><span>Enfiler</span></button>
-         </div>
-         <div class="block" id="boutons">Pour enfiler un élément derrière la file, cliquez sur lui :
-         </div>
-        </div>
         </div>
     </article>        
     
@@ -80,11 +71,19 @@ q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
 q.mettre_dans("objectif");
 
 function verifier(elt){
-    p.enfiler(elt.innerHTML)
+    if(this.value == "defiler"){
+        p.defiler();
+    }else{
+        p.enfiler(elt.innerHTML);
+    }
     if (q.est_egal_a(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle file.";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
+    }else{
+        document.getElementById("message").innerHTML = "Sauriez-vous reconstituter la file ci-dessous ?";
+        document.getElementById("entete-message").classList.add("is-success");
+        document.getElementById("entete-message").classList.remove("is-danger");
     }
 }
 </script>
