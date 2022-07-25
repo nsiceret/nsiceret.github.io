@@ -23,15 +23,16 @@
   <div class="message-header"><p>Instructions</p></div>
   <div class="message-body">
         <div class="content">
-        La <strong>file</strong> est composée d'éléments posés les uns à la suite 
-        des autres, à la queue-leu-leu. Elle propose deux fonctionnalités :
+        Vous disposez d'une <strong>file</strong>, pour l'instant vide, qui sera 
+        composée d'éléments posés les uns à la suite les autres, à la queue-leu-leu. 
+        Vous pouvez la modifier de deux manières :
         <ul>
         <li><strong>Ajouter</strong> un élément <em>à la fin de la file</em>, on dit <strong>enfiler</strong>. 
-        Pour enfiler un élément, cliquez sur lui </li><div class="block" id="boutons"></div>
+        Pour enfiler un élément, cliquez sur lui. </li><div class="block" id="boutons"></div>
         <li><strong>Défiler</strong>, c'est-à-dire enlever l'élément qui est <em>au début</em> de la file.</li>
         </ul>
             <div class="buttons is-flex is-justify-content-center">
-                <button class="button" onclick="p.defiler()" value="defiler"><span class="icon">↤</span><span>Défiler</span></button>
+                <button class="button" onclick="verifier(this);" value="defiler"><span class="icon">↤</span><span>Défiler</span></button>
             </div> 
         </div>
         <div class="content">Dans ce document, nous lirons les files de gauche à droite : le premier élément est à gauche et le dernier à droite.</div>
@@ -71,7 +72,7 @@ q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
 q.mettre_dans("objectif");
 
 function verifier(elt){
-    if(this.value == "defiler"){
+    if(elt.value == "defiler"){
         p.defiler();
     }else{
         p.enfiler(elt.innerHTML);

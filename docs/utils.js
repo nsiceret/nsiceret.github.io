@@ -134,7 +134,7 @@ function creer_liste_boutons(labels,ide="boutons"){
     
     for (var i = 0; i < labels.length; ++i) {
         var bt = document.createElement("button");
-        bt.className = "button item";
+        bt.className = "button";
         var lb = document.createTextNode(labels[i]);
         bt.appendChild(lb);
         bt.onclick = function(){verifier(this);};
