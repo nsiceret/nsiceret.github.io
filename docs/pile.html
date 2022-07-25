@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Piles</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+<script src=
+"https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.0/anime.min.js">
+</script>
+-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+
+<script src="utils.js">
+</script>
+
+</head>
+
+<body>
+<section class="section">
+<h1 class="title">Les piles !</h1>
+    <div class="columns">
+    <div class="column is-vcentered">
+    <article class="message is-info">
+  <div class="message-header"><p>Instructions</p></div>
+  <div class="message-body">
+        <div class="content">
+        La <strong>pile</strong> est composée d'éléments posés les uns sur les autres. Elle propose trois fonctionnalités.
+        <ul>
+        <li><strong>Vider</strong> la pile consiste à enlever tous les éléments de la pile, s'il y en a. On obtient une pile vide.</li>
+        <li><strong>Empiler</strong> un élément au sommet de la pile, c'est-à-dire tout en haut.</li>
+        <li><strong>Dépiler</strong>, c'est-à-dire enlever l'élément qui se trouve au sommet.</li>
+        </ul>
+        Vous pouvez créer ou modifier votre propre pile en cliquant sur les boutons ci-dessous.
+        </div>
+        <div class="box">
+        <div class="buttons is-flex is-justify-content-center">
+         <button class="button" onclick="p.vider()"><span class="icon">
+      🗑
+    </span>
+    <span>Vider</span></button>
+         <button class="button" onclick="p.depiler()"><span class="icon">⎋</span><span>Dépiler</span></button>
+         <button class="button is-static">Empiler</button>
+         </div>
+         <div class="block" id="boutons">Pour empiler un élément, cliquez sur lui :
+         </div>
+        </div>
+        </div>
+        </article>        
+    </div>
+    <div class="column is-vcentered is-one-quarter">
+        <article class="message is-success" id="entete-message">
+            <div class="message-header"><p id="message">Sauriez-vous reconstituter la pile ci-dessous ?</p>
+            </div>
+            <div class="message-body">
+                <div class="columns">
+                    <div class="column">
+                        <div class="block">Votre pile</div>
+                        <div class="block" id="pile_essai"></div>
+                    </div>
+                    <div class="column">
+                        <div class="block">Objectif</div>
+                        <div class="block" id="objectif"></div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+<script>
+liste_animaux = ["🦑","🪲","🐼","🦊","🦐","🦆","🐯","🐸"];
+creer_liste_boutons(liste_animaux);
+
+var p = new Pile("ta_pile");
+p.mettre_dans("pile_essai");
+
+var q = new Pile();
+q.empiler(liste_animaux[entier_aleatoire(0,7)]);
+q.empiler(liste_animaux[entier_aleatoire(0,7)]);
+q.empiler(liste_animaux[entier_aleatoire(0,7)]);
+q.empiler(liste_animaux[entier_aleatoire(0,7)]);
+q.empiler(liste_animaux[entier_aleatoire(0,7)]);
+q.mettre_dans("objectif");
+
+function verifier(elt){
+    p.empiler(elt.innerHTML)
+    if (q.est_egal_a(p)){
+        document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle pile.";
+        document.getElementById("entete-message").classList.remove("is-success");
+        document.getElementById("entete-message").classList.add("is-danger");
+    }
+}
+</script>
+</body>
+</html>
