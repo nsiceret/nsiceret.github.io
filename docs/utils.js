@@ -1,14 +1,23 @@
 class TAD{
   constructor(ide){
-     this.liste = []
+     /*****
+     Définition d'un type abstrait de données linéaire (File ou Pile):
+     - liste : représentation des données sous forme de Array
+     - repr : représentation HTML
+     - params : paramètres :
+        - classe : classe CSS
+        - clic : booléen, si true, appelle verifier(this);
+     ******/
+     this.liste = [];
+     this.params = [];
+     
      this.repr = document.createElement("table");
      
      this.repr.id = ide;
-     this.repr.className = "table is-bordered";
+     this.repr.className = "table";
      var tblBody = document.createElement("tbody");
      this.repr.appendChild(tblBody);
   }
-
 
   // contient une liste et un repr
   mettre_dans(elt){
@@ -78,9 +87,8 @@ class File extends TAD{
 
 
 class Pile extends TAD{
-
   constructor(ide = "ma_pile"){
-    super()
+    super();
   }
   
   est_vide(){
@@ -91,23 +99,36 @@ class Pile extends TAD{
     if (this.est_vide()){
       alert('On ne peut pas dépiler une pile vide !')
     }else{
-      this.liste.pop();      
-      this.repr.getElementsByTagName('tbody')[0].deleteRow(0);
+      const a = this.liste.pop();      
+      const b = this.repr.getElementsByTagName('tbody')[0].deleteRow(0);
+      const c = this.params.pop();
+      return [a,b,c];
     }
   }
   
-  empiler(elt){
+  empiler(elt, params={}){
     this.liste.push(elt);
+    this.params.push(params);
     
     // Insert a row at the end of table
     var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
     var newRow = tbodyRef.insertRow(0);
+    newRow.className = "is-justify-content-center is-flex";
     // Insert a cell at the end of the row
     var newCell = newRow.insertCell();
     // Append a text node to the cell
     //var newText = document.createTextNode(elt);
     var newText = document.createElement("span");
-    newText.className = "tag is-large";
+    
+    if (params.classe){
+        newText.className = params.classe;
+    }else{
+        newText.className = "tag is-large"; 
+    }
+    if(params.clic){
+        newRow.addEventListener("click",function(){ verifier(this);});
+    }
+    
     newText.innerHTML = elt;
     newCell.appendChild(newText);
   }
@@ -118,6 +139,20 @@ class Pile extends TAD{
     }
   }
   
+  retourner(n){
+     // retourner les éléments du haut de la pile de 0 à n inclus
+     var temp = []
+     for (var i = 0; i <= n; ++i) {
+         var e = this.depiler();
+         console.log( "retourne dépile "+e);
+         temp.push(e);
+     }
+     temp.reverse()
+     for (var i = 0; i <= n; ++i) {
+         var e = temp.pop();
+         this.empiler(e[0], params = e[2]);
+     }
+  }
 
 }
 
@@ -140,7 +175,15 @@ function creer_liste_boutons(labels,ide="boutons"){
         bt.onclick = function(){verifier(this);};
         btns.appendChild(bt);
     }
-    
+}
+function creer_colonne_boutons(labels,ide="boutons"){
+    creer_liste_boutons(labels,ide);
+    var colonne = document.getElementById(ide);
+    var btns = colonne.getElementsByTagName("button");
+    for (var i = 0; i < btns.length; ++i) {
+        btns[i].classList.add("is-fullwidth");
+    }
+     
 }
 
 
@@ -157,3 +200,11 @@ function entier_aleatoire(min, max) {
   return Math.floor(Math.random() * (max - min +1)) + min;
 }
 
+function liste_triee(arr) {
+  for(var i=0; i < arr.length-1; ++i) {
+     if(arr[i] > arr[i+1]) {
+        return false;
+         }
+  }
+   return true;
+}

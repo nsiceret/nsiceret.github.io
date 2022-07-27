@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>La princesse au petit pois</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="utils.js"></script>
+</head>
+<body>
+<section class="section">
+<h1 class="title">La princesse au petit pois</h1>
+    <div class="columns" >
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>Qui est-ce ?</p>
+                </div>
+                <div class="message-body">
+                    <div class="block">
+                    La princesse est habituée au grand luxe,
+                    elle ne peut dormir que sur un énorme
+                    tas de matelas. Afin de garder l'équilibre, il faut que les matelas
+                    soient empilés dans l'ordre, du plus grand en bas jusqu'au plus petit
+                    tout en haut.
+                    </div>
+                    <div class="block">
+                    Mais les matelas sont dans le désordre. 
+                    Comment faire pour tout remettre en ordre ?
+                    </div>
+                    <div class="block">Heureusement, la princesse est aussi très musclée : elle est capable
+                    de prendre un certain nombre de matelas et de retourner la pile qu'ils constituent,
+                    si ces matelas sont posés tout en haut de la pile.
+                    Par exemple elle peut
+                    retourner la pile constituée des trois matelas les plus haut, sans
+                    toucher à ceux qui sont dessous.
+                    </div>
+                    <div class="block">Dans ce jeu, vous remplacez la princesse et vous devez remettre une pile de matelas dans l'ordre. 
+                    Pas besoin de force physique, ce sont des matelas numériques, il vous suffit de cliquer.
+                    </div>
+                </div>
+            </article>
+            <article class="message">
+                <div class="message-header"><p>Vos essais</p>
+                </div>
+                <div class="message-body" id="essais">
+                Ici seront écrits vos essais. Cliquez sur un matelas de la section <em>À vous de jouer !</em> pour essayer.
+                </div>
+            </article>
+        </div>
+        <div class="column">
+            <article class="message is-success" id="entete-message">
+                <div class="message-header"><p id="message">À vous de jouer !</p>
+                </div>
+                <div class="message-body">
+                    <div class="block" id="consigne">Cliquez sur un matelas, cela retournera toute la pile 
+                    constituée de ce matelas et de ceux qui sont au-dessus.</div>
+                    <div class="content" id="lit"></div>
+                </div>
+            </article> 
+        </div>
+    </div>
+</section>
+
+<script>
+
+const liste_matelas = [
+"Un très grand matelas",
+"Le deuxième plus grand des matelas",
+"Un grand matelas",
+"Un matelas",
+"Le plus grand de tous les matelas de la princesse",
+"Un très très grand matelas"
+];
+const liste_couleurs = [
+"is-success",
+"is-warning",
+"is-info",
+"is-danger",
+"is-primary"
+]
+
+
+p = new Pile();
+essais = 0;
+retournements = 0;
+init();
+
+function init(){
+    p.vider();
+    for(i=0; i< liste_matelas.length; ++i){
+        p.empiler(liste_matelas[i],
+            params = { classe:"tag is-large is-clickable is-relative mx-auto "+liste_couleurs[i],
+                       clic: true
+                      }
+        );
+    }
+    p.mettre_dans("lit");
+}
+
+
+function verifier(elt){
+    const n = elt.rowIndex;
+    p.retourner(n);
+    essais ++;
+    retournements += n+1;
+    var essai = document.createElement("div");
+    var texte = document.createTextNode(essais+". Retourner "+(n+1)+" matelas");
+    essai.appendChild(texte);
+    document.querySelector("#essais").appendChild(essai);
+    if (liste_triee(p.liste.slice().map(x => x.length).reverse())){
+        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+essais+" essais en retournant "+retournements+" matelas !";
+        document.getElementById("entete-message").classList.remove("is-success");
+        document.getElementById("entete-message").classList.add("is-danger");
+        
+        document.querySelector("#consigne").innerHTML = "Pouvez-vous faire mieux : moins d'essais ou moins de matelas retournés ?";
+    }else{
+        document.getElementById("message").innerHTML = "À vous de jouer";
+        document.getElementById("entete-message").classList.add("is-success");
+        document.getElementById("entete-message").classList.remove("is-danger");
+    }
+    
+}
+</script>
+</body>
+</html>
