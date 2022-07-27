@@ -30,7 +30,7 @@
                     de prendre un certain nombre de matelas et de retourner la pile qu'ils constituent,
                     si ces matelas sont posés tout en haut de la pile.
                     Par exemple elle peut
-                    retourner la pile constituée des trois matelas les plus haut, sans
+                    retourner la pile constituée des trois matelas les plus en haut, sans
                     toucher à ceux qui sont dessous.
                     </div>
                     <div class="block">Dans ce jeu, vous remplacez la princesse et vous devez remettre une pile de matelas dans l'ordre. 
@@ -71,11 +71,12 @@ const liste_matelas = [
 "Un très très grand matelas"
 ];
 const liste_couleurs = [
-"is-success",
+"is-gray",
 "is-warning",
 "is-info",
 "is-danger",
-"is-primary"
+"is-primary",
+"is-dark"
 ]
 
 
@@ -111,7 +112,7 @@ function verifier(elt){
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
         
-        document.querySelector("#consigne").innerHTML = "Pouvez-vous faire mieux : moins d'essais ou moins de matelas retournés ?";
+        document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
     }else{
         document.getElementById("message").innerHTML = "À vous de jouer";
         document.getElementById("entete-message").classList.add("is-success");
