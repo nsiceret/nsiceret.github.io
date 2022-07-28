@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test listes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> <!--https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/-->
+<script src="utils.js"></script>
+</head>
+<body>
+<section class="section">
+<h1 class="title">Tri libre</h1>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>La situation</p>
+                </div>
+                <div class="message-body is-vcentered">
+                    <div class="block">
+                    Vous avez une liste, copiée ci-dessous.
+                    </div>
+                    <div class="content" id="initiale">
+                    </div>
+                    <div class="block">
+                    Vous devez trier ces nombres du plus petit au plus grand.
+                    </div>
+                </div>
+            </article>
+            <article class="message is-warning">
+                <div class="message-header"><p>Comment faire ?</p>
+                </div>
+                <div class="message-body is-vcentered">
+                    <div class="block"> 
+                    Pour trier, cliquez sur une case, puis sur une deuxième, et cela inversera leurs places. 
+                    Il vous faut cliquer sur la liste qui se trouve ci-dessous, la première, en haut, est gardée pour mémoire.
+                    </div>
+                    <div class="content" id="tableau">
+                    </div>
+                </div>
+            </article>
+            
+        </div>
+        <div class="column">
+            <article class="message is-success" id="entete-message">
+                <div class="message-header"><p id="message">J'écrirai ici vos essais</p>
+                </div>
+                <div class="message-body" id="essais">
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<script>
+
+liste = [9,7,4,8,5,3,1,2,6];
+
+dernier_clic = -1;
+
+l = new Liste();
+initiale = new Liste();
+
+permutations = 0;
+
+function init(){
+    for(i=0; i< liste.length; ++i){
+        l.append(liste[i],
+            params = { classe:"tag is-large is-clickable",
+                       clic: true
+                      }
+        );
+        initiale.append(liste[i]);
+    }
+    l.mettre_dans("tableau");
+    initiale.mettre_dans("initiale");
+}
+
+init();
+
+function verifier(elt){
+    var i = elt.parentNode.cellIndex;
+    if(dernier_clic == -1){
+        elt.classList.add("is-success");
+        dernier_clic = i;
+    }else if(dernier_clic == i){
+        dernier_clic = -1;
+        elt.classList.remove("is-success");
+    }else{
+        l.get_tagcell(dernier_clic).classList.remove("is-success");
+        l.permuter(dernier_clic,i);
+        permutations++;
+        
+        var msg = document.createElement("div");
+        msg.className = "block";
+        msg.innerHTML = "Permuter cellules d'index "+dernier_clic+" et "+i;
+        document.querySelector("#essais").appendChild(msg);
+        
+        dernier_clic = -1;
+    }
+    if(liste_triee(l.liste)){
+        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+permutations+" permutations !";
+        document.getElementById("entete-message").classList.remove("is-success");
+        document.getElementById("entete-message").classList.add("is-danger");
+        
+        //document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
+    }else{
+        document.getElementById("message").innerHTML = "À vous de jouer";
+        document.getElementById("entete-message").classList.add("is-success");
+        document.getElementById("entete-message").classList.remove("is-danger");
+    }
+}
+</script>
+</body>
+</html>

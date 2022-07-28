@@ -1,6 +1,6 @@
 class TAD{
   constructor(ide){
-     /*****
+     /****
      Définition d'un type abstrait de données linéaire (File ou Pile):
      - liste : représentation des données sous forme de Array
      - repr : représentation HTML
@@ -126,7 +126,7 @@ class Pile extends TAD{
         newText.className = "tag is-large"; 
     }
     if(params.clic){
-        newRow.addEventListener("click",function(){ verifier(this);});
+        newText.addEventListener("click",function(){ verifier(this);});
     }
     
     newText.innerHTML = elt;
@@ -154,6 +154,57 @@ class Pile extends TAD{
      }
   }
 
+}
+
+class Liste extends TAD{
+    constructor(ide = "ma_liste"){
+      super();
+      var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
+      this.ligne = tbodyRef.insertRow(0);
+      this.ligne.className = "is-justify-content-center is-flex";
+    }
+    
+    append(elt, params={}){
+        this.liste.push(elt);
+        var newCell = this.ligne.insertCell();
+        // Append a text node to the cell
+        //var newText = document.createTextNode(elt);
+        var newText = document.createElement("span");
+        
+        if (params.classe){
+            newText.className = params.classe;
+        }else{
+            newText.className = "tag is-large"; 
+        }
+        if(params.clic){
+            newText.addEventListener("click",function(){ verifier(this);});
+        }
+        
+        newText.innerHTML = elt;
+        newCell.appendChild(newText);
+    }
+    
+    get_tagcell(i){
+        return this.ligne.getElementsByTagName("td")[i].firstChild;
+    }
+    
+    get_innerhtml(i){
+        return this.get_tagcell(i).innerHTML;
+    }
+    
+    set_innerhtml(i,h){
+        this.get_tagcell(i).innerHTML = h;
+    }
+    
+    permuter(i,j){
+        var a = this.liste[i];
+        this.liste[i] = this.liste[j];
+        this.liste[j] = a;
+        var ai = this.get_innerhtml(i);
+        this.set_innerhtml(i,this.get_innerhtml(j));
+        this.set_innerhtml(j,ai);
+    }
+    
 }
 
 

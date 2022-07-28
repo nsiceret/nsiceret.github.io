@@ -99,7 +99,7 @@ function init(){
 
 
 function verifier(elt){
-    const n = elt.rowIndex;
+    const n = elt.parentNode.parentNode.rowIndex;
     p.retourner(n);
     essais ++;
     retournements += n+1;
