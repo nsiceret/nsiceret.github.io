@@ -144,7 +144,6 @@ class Pile extends TAD{
      var temp = []
      for (var i = 0; i <= n; ++i) {
          var e = this.depiler();
-         console.log( "retourne dépile "+e);
          temp.push(e);
      }
      temp.reverse()
@@ -205,6 +204,23 @@ class Liste extends TAD{
         this.set_innerhtml(j,ai);
     }
     
+}
+
+class ListePonderee extends Liste{
+    constructor(ide = "ma_liste"){
+        super();
+        this.poids = [];    
+    }
+    append(valeur,poids,params={}){
+        super.append(valeur,params);
+        this.poids.push(poids);
+    }
+    permuter(i,j){
+        super.permuter(i,j);
+        var a = this.poids[i];
+        this.poids[i] = this.poids[j];
+        this.poids[j] = a;
+    }
 }
 
 
