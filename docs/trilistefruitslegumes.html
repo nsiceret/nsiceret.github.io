@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tri d'une liste en aveugle</title>
+<title>Tri de fruits et légumes selon leur poids</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"> <!--https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/-->
+<link rel="stylesheet" href="bulma.min.css"> <!--https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/-->
 <script src="utils.js"></script>
 </head>
 <body>
 <section class="section">
-<h1 class="title">Tri de fruits et légumes</h1>
+<h1 class="title">Tri de fruits et légumes selon leur poids</h1>
     <div class="columns">
         <div class="column">
             <article class="message is-info">
                 <div class="message-header"><p>La situation</p>
                 </div>
-                <div class="message-body is-vcentered">
+                <div class="message-body">
                     Vous devez trier vos sacs de fruits et légumes par ordre de poids croissant, du plus léger au plus lourd.  
                 </div>
             </article>
@@ -22,28 +22,39 @@
                 <div class="message-header"><p>Comment faire ?</p>
                 </div>
                 <div class="message-body">
-                    <div class="block">Vous avez à votre disposition la liste des sacs :
+                    <div class="block">Vous avez à votre disposition la liste des sacs et une balance.
                     </div>
-                    <div class="content is-centered" id="tableau">
+                    <div class="card has-background-warning-light" id="outils">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                <span class="content">Les sacs</span>
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <div class="content is-centered" id="tableau">
+                            </div>
+                        </div>
                     </div>
-                    <div class="block"> et une balance.
-                    </div>
-                    <div class="columns" id="comparaison">
+                    <div class="card has-background-warning-light" id="outils">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                <span class="content" id="balance">La balance ⚖️ </span>
+                            </p>
+                        </header>
+                        <div class="card-content">
+                            <table class="table is-justify-content-center is-flex"  id="comparaison">
+                            </table>
+                        </div>                        
                     </div>
                     <div class="block"> 
-                    Sélectionnez deux cases en cliquant dessus et la balance vous dira lequel
-                    des deux sacs est le plus lourd.
+                    Cliquez sur un sac de la liste pour le poser sur la balance. 
+                    Lorsque deux sacs sont sur la balance, vous pouvez savoir lequel est le plus lourd.
                     
-                    Vous pourrez alors choisir si vous voulez permuter les places de ces sacs
+                    Vous pouvez alors choisir si vous voulez permuter les places de ces sacs
                     dans la liste ou non.
                     </div>
-                    <div class="buttons is-centered is-flex">
-                        <button class="button" id="permuter" onclick="permuter()">Permuter</button>
-                        <button class="button" id="paspermuter" onclick="paspermuter()">Ne pas permuter</button>
-                    </div>
                     <div class="block">
-                    Ensuite, vous pourrez
-                    recommencer avec deux autres sacs... jusqu'à ce que la liste soit triée.
+                    Ensuite, recommencez avec deux autres sacs... jusqu'à ce que la liste soit triée.
                     </div>
                 </div>
             </article>
@@ -53,7 +64,11 @@
             <article class="message is-success" id="entete-message">
                 <div class="message-header"><p id="message">J'écrirai ici vos essais</p>
                 </div>
-                <div class="message-body" id="essais">
+                <div class="message-body">
+                    <div class="block"  id="clics">
+                    </div>
+                    <div class="block"  id="essais">
+                    </div>
                 </div>
             </article>
         </div>
@@ -62,14 +77,23 @@
 
 <script>
 
-prix = [9,7,4,8,5,3,1,2,6];
-legumes = ["🍓","🍌","🍏","🍆","🍊","🍍","🍋","🍅"]
+prix = [7,4,8,5,3,1,2,6];
+legumes = ["🍓","🍌","🍏","🍆","🍊","🍍","🍋","🍅"];
 
 selection = [];
 
 l = new ListePonderee();
 
 permutations = 0;
+clics = 0;
+
+btn_permuter = document.createElement("span");
+btn_permuter.className = "tag is-clickable is-medium";
+btn_paspermuter = btn_permuter.cloneNode();
+btn_permuter.addEventListener("click",permuter);
+btn_paspermuter.addEventListener("click",paspermuter);
+btn_permuter.innerHTML = "Oui";
+btn_paspermuter.innerHTML = "Non";
 
 function init(){
     for(i=0; i< legumes.length; ++i){
@@ -83,50 +107,6 @@ function init(){
 }
 
 init();
-desactiver();
-
-
-function desactiver(){
-    var bt = document.querySelector("#permuter");
-    bt.classList.add("is-static");
-    var bt = document.querySelector("#paspermuter");
-    bt.classList.add("is-static");
-    document.querySelector("#comparaison").innerHTML = "";
-}
-
-function activer(){
-    var bt = document.querySelector("#permuter");
-    bt.classList.remove("is-static");
-    var bt = document.querySelector("#paspermuter");
-    bt.classList.remove("is-static");
-    
-    var i;
-    var j;
-    if (l.poids[selection[0]]<l.poids[selection[1]]){
-        i = selection[0];
-        j = selection[1];
-    }else{
-        i = selection[1];
-        j = selection[0];
-    }
-
-    var c = document.querySelector("#comparaison");
-    
-    var d1 = document.createElement("div");
-    c.appendChild(d1);
-    d1.className = "column";
-    var t = document.createTextNode("Le plus léger: ");
-    d1.appendChild(t);
-    d1.appendChild(l.get_tagcell(i).cloneNode(true));
-    
-    d1 = document.createElement("div");
-    c.appendChild(d1);
-    d1.className = "column";
-    var t = document.createTextNode("Le plus lourd: ");
-    d1.appendChild(t);
-    d1.appendChild(l.get_tagcell(j).cloneNode(true));
-    
-}
 
 function vider_selection(){
     const n = selection.length;
@@ -135,7 +115,7 @@ function vider_selection(){
         selection.shift();
     }
     console.log("sélection vidée "+selection);
-    desactiver();
+    afficher_balance();
 }
 
 function permuter(){
@@ -152,26 +132,94 @@ function permuter(){
     
     l.permuter(a,b);
     vider_selection();
+    afficher_balance()
     verifier_resultat();
 }
 
 function paspermuter(){
     vider_selection();
+    afficher_balance()
 }
 
+function afficher_balance(){
+    var n = selection.length;
+
+    var b = document.querySelector("#balance");
+    b.innerHTML = "La balance ⚖️ ";
+    
+    var c = document.querySelector("#comparaison");
+    c.innerHTML = "";
+    
+    if(n >= 1){
+        b.innerHTML = b.innerHTML + l.get_innerhtml(selection[0]);
+    }
+    if(n ==2){
+        b.innerHTML = b.innerHTML + " "+l.get_innerhtml(selection[1]);
+        
+        var ligne1 = c.insertRow();
+        var ligne2 = c.insertRow();
+        
+        // plus léger
+        var d1 = ligne1.insertCell();
+        d1.innerHTML = "Le plus léger";
+        
+        // plus lourd
+        // plus léger
+        var d1 = ligne1.insertCell();
+        d1.innerHTML = "Le plus lourd";
+        
+        
+        // calcul du min et max
+        var i;
+        var j;
+        if (l.poids[selection[0]]<l.poids[selection[1]]){
+            i = selection[0];
+            j = selection[1];
+        }else{
+            i = selection[1];
+            j = selection[0];
+        }
+        
+        var legume = l.get_tagcell(i).cloneNode(true);
+        legume.classList.remove("is-clickable");
+        var c = ligne2.insertCell();
+        c.className = "has-text-centered";
+        c.appendChild(legume);
+        
+        var legume = l.get_tagcell(j).cloneNode(true);
+        legume.classList.remove("is-clickable");
+        var c = ligne2.insertCell();
+        c.className = "has-text-centered";
+        c.appendChild(legume);
+        
+        var t = ligne1.insertCell();
+        t.colSpan="2";
+        t.className = "has-text-centered";
+        t.innerHTML="Permuter ?";
+        
+        c = ligne2.insertCell();
+        c.appendChild(btn_permuter);
+        c.className = "has-text-centered is-vcentered";
+        c = ligne2.insertCell();
+        c.appendChild(btn_paspermuter);
+        c.className = "has-text-centered is-vcentered";
+        
+    }
+    
+}
 function verifier(elt){
     console.log("vérifier "+selection+" "+elt.innerHTML);
     var i = elt.parentNode.cellIndex;
     if(selection.includes(i)){
         console.log(i+"est dedans");
         elt.classList.remove("is-success");
-        desactiver();
         if(i == selection[0]){
             selection.shift();
         }else{
             selection.pop();
         }
     }else{
+        clics++;
         console.log(i+"n'est pas dedans");
         elt.classList.add("is-success");
         if(selection.length == 2){
@@ -179,19 +227,17 @@ function verifier(elt){
             selection.shift();
         }
         selection.push(i);
-    }
-    if(selection.length == 2){
-        activer();
-    }else{
-        desactiver();
-    }
+    }   
+    afficher_balance();
+    
     console.log("vérification faite :"+selection);
+    document.querySelector("#clics").innerHTML = clics+" déplacements de sacs vers la balance";
     verifier_resultat();
 }
 
 function verifier_resultat(){
     if(liste_triee(l.poids)){
-        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+permutations+" permutations !";
+        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+permutations+" permutations et "+clics+" déplacements de sacs vers la balance !";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
         
