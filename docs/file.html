@@ -17,20 +17,34 @@
         composée d'éléments posés les uns à la suite les autres, à la queue-leu-leu. 
         Vous pouvez la modifier de deux manières :
         <ul>
-        <li><strong>Ajouter</strong> un élément <em>à la fin de la file</em>, on dit <strong>enfiler</strong>. 
-        Pour enfiler un élément, cliquez sur lui. </li><div class="block" id="boutons"></div>
+        <li><strong>Ajouter</strong> un élément <em>à la fin de la file</em>, on dit <strong>enfiler</strong>.</li>
         <li><strong>Défiler</strong>, c'est-à-dire enlever l'élément qui est <em>au début</em> de la file.</li>
         </ul>
-            <div class="buttons is-flex is-justify-content-center">
-                <button class="button" onclick="verifier(this);" value="defiler"><span class="icon">↤</span><span>Défiler</span></button>
-            </div> 
         </div>
         <div class="content">Dans ce document, nous lirons les files de gauche à droite : le premier élément est à gauche et le dernier à droite.</div>
         </div>
     </article>        
     
     <article class="message is-success" id="entete-message">
-            <div class="message-header"><p id="message">Sauriez-vous reconstituter la file ci-dessous ?</p>
+            <div class="message-header">
+            <div id="message">Sauriez-vous reconstituter la file ci-dessous ?</div>
+            <form>
+                <div class="field has-addons ">
+                    <div class="control">
+                        <div class="button is-static is-success">Enfiler</div>
+                    </div>
+                    <div class="control">
+                        <div class="select"><select id="select" style="display:inline;" onchange="enfiler(this);"></select></div>
+                        <!--  -->
+                    </div>
+                    <div class="control">
+                        <div class="button is-static is-success"> ou </div>
+                    </div>
+                    <div class="control">
+                        <div class="button" onclick="enlever();">défiler</div>
+                    </div>
+                </div>
+            </form>
             </div>
             <div class="message-body">
                 <div class="columns">
@@ -48,25 +62,23 @@
 </section>
 <script>
 liste_animaux = ["🦑","🪲","🐼","🦊","🦐","🦆","🐯","🐸"];
-creer_liste_boutons(liste_animaux);
+creer_select(liste_animaux.slice());
 
 var p = new File("ta_file");
 p.mettre_dans("file_essai");
 
+var file_objectif = liste_animaux.sort(function () {
+  return Math.random() - 0.5;
+});
+file_objectif = file_objectif.slice(-5);
+
 var q = new File();
-q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
-q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
-q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
-q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
-q.enfiler(liste_animaux[entier_aleatoire(0,7)]);
+for(var c in file_objectif){
+    q.enfiler(file_objectif[c]);
+}
 q.mettre_dans("objectif");
 
 function verifier(elt){
-    if(elt.value == "defiler"){
-        p.defiler();
-    }else{
-        p.enfiler(elt.innerHTML);
-    }
     if (q.est_egal_a(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle file.";
         document.getElementById("entete-message").classList.remove("is-success");
@@ -76,6 +88,17 @@ function verifier(elt){
         document.getElementById("entete-message").classList.add("is-success");
         document.getElementById("entete-message").classList.remove("is-danger");
     }
+}
+
+function enfiler(elt){
+    if(elt.value.length > 0){
+        p.enfiler(elt.value);
+        verifier();
+    }
+}
+function enlever(){
+    p.defiler();
+    verifier();
 }
 </script>
 </body>

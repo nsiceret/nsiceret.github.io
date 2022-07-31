@@ -42,7 +42,7 @@ class File extends TAD{
     constructor(ide = "ma_pile"){
       super();
       var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
-      var newRow = tbodyRef.insertRow(0)
+      this.ligne = tbodyRef.insertRow(0);
     }
     
     est_vide(){
@@ -55,9 +55,9 @@ class File extends TAD{
       }else{
         this.liste.reverse();
         this.liste.pop();
-        this.liste.reverse()      
+        this.liste.reverse();      
         //this.repr.getElementsByTagName('tbody')[0].deleteRow(0);
-        this.repr.rows[0].deleteCell(0);
+        this.ligne.deleteCell(0);
       }
     }
     
@@ -159,8 +159,7 @@ class Liste extends TAD{
     constructor(ide = "ma_liste"){
       super();
       var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
-      this.ligne = tbodyRef.insertRow(0);
-      this.ligne.className = "is-justify-content-center is-flex";
+      this.ligne = tbodyRef.insertRow();
     }
     
     append(elt, params={}){
@@ -251,6 +250,19 @@ function creer_colonne_boutons(labels,ide="boutons"){
         btns[i].classList.add("is-fullwidth");
     }
      
+}
+function creer_select(labels,ide="select"){
+    var pere = document.getElementById(ide);
+    var o = document.createElement("option");
+    o.value = "";
+    o.innerHTML = "-";
+    pere.appendChild(o);
+    for (var i = 0; i < labels.length; ++i) {
+        o = document.createElement("option");
+        o.value = labels[i];
+        o.innerHTML = labels[i];
+        pere.appendChild(o);
+    }
 }
 
 
