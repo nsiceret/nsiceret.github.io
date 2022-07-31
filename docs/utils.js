@@ -12,15 +12,26 @@ class Item{
         this.container = where;
         
         if(this.type == "stack"){
-            this.drawing = this.container.insertRow(0);
+            this.drawing = this.container.drawing.insertRow(0);
+            this.drawing.className="has-text-centered";
+            
             var newCell = this.drawing.insertCell();
             
             var txt = document.createTextNode(this.value);
-            newCell.appendChild(txt);
-            
+            var content = document.createElement("span");
+            newCell.appendChild(content);
+            content.appendChild(txt);
+            content.classList.add(this.tag);
             for(var c in this.params["classes"]){
-                newCell.classList.add(this.params["classes"][c]);
+                content.classList.add(this.params["classes"][c]);
             }
+            
+            if(this.params["style"]){
+                for(var c in this.params["style"]){
+                    content.setAttribute("style", this.params["style"][c]);
+                }
+            }
+            
                   
         }else{
             this.drawing = document.createElement(this.tag);
@@ -31,14 +42,19 @@ class Item{
             var txt = document.createTextNode(this.value);
             this.drawing.appendChild(txt);
             
-            where.appendChild(this.drawing);
+            this.container.drawing.appendChild(this.drawing);
             
             for(var c in this.params["classes"]){
                 this.drawing.classList.add(this.params["classes"][c]);
             }
+            
+            if(this.params["style"]){
+                for(var c in this.params["style"]){
+                    this.drawing.setAttribute("style", this.params["style"][c]);
+                }
+            }
+            
         }
-        
-        
         
         if(this.params["click"]){
             this.drawing.addEventListener("click",this.params["click"]);
@@ -46,7 +62,10 @@ class Item{
         }else{
             this.drawing.classList.remove("is-clickable");
         }
+        
         this.drawing.dataset.value = this.value;
+        this.container.items.push(this);
+
     }
 }
 
@@ -56,6 +75,7 @@ class ADT{
       this.item_params = item_params;
       this.container = undefined;
       this.list = list;         // list of values 
+      this.items = [];          // list of items
     }
     
     draw(where="",tag){
@@ -83,6 +103,10 @@ class ADT{
         return (this.list.length == 0);
     }
     
+    empty(){
+        this.list = [];
+    }
+    
     push(value){
         this.list.push(value);
     }
@@ -104,19 +128,23 @@ class ADT{
     }
     
     get_value(i){
-        return this.list[i].value;
+        return this.list[i];
     }
     
     set_value(i,val){
-        this.list[i].value = val;
+        this.list[i] = val;
     }
     
-    get_param(i,param_name){
-        return this.list[i].params[param_name];
+    get_param(param_name){
+        return this.params[param_name];
     }
     
-    set_param(i,param_name,param_value){
-        this.list[i].params[param_name] = param_value;
+    set_param(param_name,param_value){
+        this.params[param_name] = param_value;
+    }
+    
+    get_item(i){
+        return this.items[i];
     }
     
     swap(i,j){
@@ -150,7 +178,7 @@ class List extends ADT{
 
         for(var i in this.list){
             var item = new Item(this.list[i],this.item_params);
-            item.draw(this.drawing);
+            item.draw(this);
         }
     }
 
@@ -160,7 +188,7 @@ class Stack extends ADT{
     constructor(list=[],params={},item_params={}){
         super(list,params,item_params);
         this.item_params["type"] = "stack";
-        this.item_params["tag"] = "tr";
+        this.item_params["tag"] = this.item_params["tag"] ? this.item_params["tag"] : "td";
     }
     
     draw(where=""){
@@ -168,7 +196,24 @@ class Stack extends ADT{
         
         for(var i in this.list){
             var item = new Item(this.list[i],this.item_params);
-            item.draw(this.drawing);
+            item.draw(this);
+        }
+    }
+    
+    reverse(n){
+        var s = new Stack();
+        for(var i=0; i<= n; ++i){
+            var e = this.pop();
+            s.push(e);
+        }
+        var t = new Stack();
+        while(!s.is_empty()){
+            var e = s.pop();
+            t.push(e);
+        }
+        while(!t.is_empty()){
+            var e = t.pop();
+            this.push(e);
         }
     }
 }

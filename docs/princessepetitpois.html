@@ -70,44 +70,40 @@ const liste_matelas = [
 "Le plus grand de tous les matelas de la princesse",
 "Un très très grand matelas"
 ];
-const liste_couleurs = [
-"is-gray",
-"is-warning",
-"is-info",
-"is-danger",
-"is-primary",
-"is-dark"
-]
 
 
-p = new Pile();
+p = new Stack(liste_matelas,{},{"tag":"tag"});
 essais = 0;
 retournements = 0;
 init();
 
 function init(){
-    p.vider();
-    for(i=0; i< liste_matelas.length; ++i){
-        p.empiler(liste_matelas[i],
-            params = { classe:"tag is-large is-clickable is-relative mx-auto "+liste_couleurs[i],
-                       clic: true
-                      }
-        );
-    }
-    p.mettre_dans("lit");
+    p.empty();
+    p = new Stack(
+            liste_matelas,
+            {},
+            {"click":verifier,
+             "classes":["is-large","is-relative","mx-auto","is-success"],
+             "tag":"tag"
+            }
+            );
+    p.draw(document.querySelector("#lit"));
+    
+    var cl = p.get_item(2).params["classes"].slice();
 }
 
 
 function verifier(elt){
-    const n = elt.parentNode.parentNode.rowIndex;
-    p.retourner(n);
+    const n = elt.target.parentNode.parentNode.rowIndex;    // le clic se passe sur le td !!  
+    p.reverse(n);
+    p.draw();
     essais ++;
     retournements += n+1;
     var essai = document.createElement("div");
     var texte = document.createTextNode(essais+". Retourner "+(n+1)+" matelas");
     essai.appendChild(texte);
     document.querySelector("#essais").appendChild(essai);
-    if (liste_triee(p.liste.slice().map(x => x.length).reverse())){
+    if (liste_triee(p.list.slice().map(x => x.length).reverse())){
         document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+essais+" essais en retournant "+retournements+" matelas !";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
