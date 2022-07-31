@@ -1,6 +1,14 @@
-
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+.vercel
+.output
 docs/bulma.min.css
 docs/pyscript.css
 docs/pyscript.js
-docs/.DS_Store
 docs/todo.md
