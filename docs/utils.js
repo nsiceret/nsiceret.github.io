@@ -1,244 +1,218 @@
-class TAD{
-  constructor(ide){
-     /****
-     Définition d'un type abstrait de données linéaire (File ou Pile):
-     - liste : représentation des données sous forme de Array
-     - repr : représentation HTML
-     - params : paramètres :
-        - classe : classe CSS
-        - clic : booléen, si true, appelle verifier(this);
-     ******/
-     this.liste = [];
-     this.params = [];
-     
-     this.repr = document.createElement("table");
-     
-     this.repr.id = ide;
-     this.repr.className = "table";
-     var tblBody = document.createElement("tbody");
-     this.repr.appendChild(tblBody);
-  }
-
-  // contient une liste et un repr
-  mettre_dans(elt){
-    // dans un elt HTML
-    document.getElementById(elt).appendChild(this.repr);
-  }
-  
-  est_egal_a(autre){
-      if (autre.liste == null || this.liste == null) return false;
-      if (autre.liste.length !== this.liste.length) return false;
-      for (var i = 0; i < this.liste.length; ++i) {
-        if (this.liste[i] !== autre.liste[i]){
-          return false;
-        }
+class Item{
+    constructor(value, params={}){
+        this.value = value;
+        this.params = params;
+        this.drawing = undefined;
+        this.container = undefined;
+    }
+    draw(where){
+        this.tag = this.params["tag"] ? this.params["tag"] : "span";
+        this.type = this.params["type"] ? this.params["type"] : "tag "
+        this.size = this.params["size"] ? this.params["size"] : "is-large";
+        this.container = where;
         
-      }
-      return true;
-  }
-}
-
-class File extends TAD{
-    constructor(ide = "ma_pile"){
-      super();
-      var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
-      this.ligne = tbodyRef.insertRow(0);
-    }
-    
-    est_vide(){
-      return this.liste.length == 0;
-    }
-    
-    defiler(){
-      if (this.est_vide()){
-        alert('On ne peut pas défiler une file vide !')
-      }else{
-        this.liste.reverse();
-        this.liste.pop();
-        this.liste.reverse();      
-        //this.repr.getElementsByTagName('tbody')[0].deleteRow(0);
-        this.ligne.deleteCell(0);
-      }
-    }
-    
-    enfiler(elt){
-      this.liste.push(elt);
-      
-      // Insert a row at the end of table
-      var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
-      var rowRef = tbodyRef.getElementsByTagName('tr')[0];
-      // Insert a cell at the end of the row
-      var newCell = this.repr.rows[0].insertCell();
-      // Append a text node to the cell
-      //var newText = document.createTextNode(elt);
-      var newText = document.createElement("span");
-      newText.className = "tag is-large";
-      newText.innerHTML = elt;
-      newCell.appendChild(newText);
-    }
-    
-    vider(){
-      while (! this.est_vide()){
-        this.defiler();
-      }
-    }
-
-}
-
-
-class Pile extends TAD{
-  constructor(ide = "ma_pile"){
-    super();
-  }
-  
-  est_vide(){
-    return this.liste.length == 0;
-  }
-  
-  depiler(){
-    if (this.est_vide()){
-      alert('On ne peut pas dépiler une pile vide !')
-    }else{
-      const a = this.liste.pop();      
-      const b = this.repr.getElementsByTagName('tbody')[0].deleteRow(0);
-      const c = this.params.pop();
-      return [a,b,c];
-    }
-  }
-  
-  empiler(elt, params={}){
-    this.liste.push(elt);
-    this.params.push(params);
-    
-    // Insert a row at the end of table
-    var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
-    var newRow = tbodyRef.insertRow(0);
-    newRow.className = "is-justify-content-center is-flex";
-    // Insert a cell at the end of the row
-    var newCell = newRow.insertCell();
-    // Append a text node to the cell
-    //var newText = document.createTextNode(elt);
-    var newText = document.createElement("span");
-    
-    if (params.classe){
-        newText.className = params.classe;
-    }else{
-        newText.className = "tag is-large"; 
-    }
-    if(params.clic){
-        newText.addEventListener("click",function(){ verifier(this);});
-    }
-    
-    newText.innerHTML = elt;
-    newCell.appendChild(newText);
-  }
-  
-  vider(){
-    while (! this.est_vide()){
-      this.depiler();
-    }
-  }
-  
-  retourner(n){
-     // retourner les éléments du haut de la pile de 0 à n inclus
-     var temp = []
-     for (var i = 0; i <= n; ++i) {
-         var e = this.depiler();
-         temp.push(e);
-     }
-     temp.reverse()
-     for (var i = 0; i <= n; ++i) {
-         var e = temp.pop();
-         this.empiler(e[0], params = e[2]);
-     }
-  }
-
-}
-
-class Liste extends TAD{
-    constructor(ide = "ma_liste"){
-      super();
-      var tbodyRef = this.repr.getElementsByTagName('tbody')[0];
-      this.ligne = tbodyRef.insertRow();
-    }
-    
-    append(elt, params={}){
-        this.liste.push(elt);
-        var newCell = this.ligne.insertCell();
-        // Append a text node to the cell
-        //var newText = document.createTextNode(elt);
-        var newText = document.createElement("span");
-        
-        if (params.classe){
-            newText.className = params.classe;
+        if(this.type == "stack"){
+            this.drawing = this.container.insertRow(0);
+            var newCell = this.drawing.insertCell();
+            
+            var txt = document.createTextNode(this.value);
+            newCell.appendChild(txt);
+            
+            for(var c in this.params["classes"]){
+                newCell.classList.add(this.params["classes"][c]);
+            }
+                  
         }else{
-            newText.className = "tag is-large"; 
-        }
-        if(params.clic){
-            newText.addEventListener("click",function(){ verifier(this);});
+            this.drawing = document.createElement(this.tag);
+            
+            this.drawing.className = this.type;
+            this.drawing.classList.add(this.size);
+            
+            var txt = document.createTextNode(this.value);
+            this.drawing.appendChild(txt);
+            
+            where.appendChild(this.drawing);
+            
+            for(var c in this.params["classes"]){
+                this.drawing.classList.add(this.params["classes"][c]);
+            }
         }
         
-        newText.innerHTML = elt;
-        newCell.appendChild(newText);
+        
+        
+        if(this.params["click"]){
+            this.drawing.addEventListener("click",this.params["click"]);
+            this.drawing.classList.add("is-clickable");
+        }else{
+            this.drawing.classList.remove("is-clickable");
+        }
+        this.drawing.dataset.value = this.value;
+    }
+}
+
+class ADT{
+    constructor(list=[],params={},item_params={}){
+      this.params = params;
+      this.item_params = item_params;
+      this.container = undefined;
+      this.list = list;         // list of values 
     }
     
-    get_tagcell(i){
-        return this.ligne.getElementsByTagName("td")[i].firstChild;
+    draw(where="",tag){
+        this.container = where ? where : this.container; // change only if where is given
+        this.container.innerHTML = "";
+
+        this.drawing = document.createElement(tag);
+        
+        this.container.appendChild(this.drawing);
+        
+        if(this.params["style"]){
+            for(var c in this.params["style"]){
+                this.drawing.setAttribute("style", this.params["style"][c]);
+            }
+        }
+        
+        if(this.params["classes"]){
+            for(var c in this.params["classes"]){
+                this.drawing.classList.add(this.params["classes"][c]);
+            }
+        }
     }
     
-    get_innerhtml(i){
-        return this.get_tagcell(i).innerHTML;
+    is_empty(){
+        return (this.list.length == 0);
     }
     
-    set_innerhtml(i,h){
-        this.get_tagcell(i).innerHTML = h;
+    push(value){
+        this.list.push(value);
     }
     
-    permuter(i,j){
-        var a = this.liste[i];
-        this.liste[i] = this.liste[j];
-        this.liste[j] = a;
-        var ai = this.get_innerhtml(i);
-        this.set_innerhtml(i,this.get_innerhtml(j));
-        this.set_innerhtml(j,ai);
+    shift(){
+        if(this.is_empty()){
+            alert("Impossible d'enlever un élément. C'est vide !")
+        }else{
+            return this.list.shift();
+        }
+    }
+    
+    pop(){
+        if(this.is_empty()){
+            alert("Impossible d'enlever un élément. C'est vide !")
+        }else{
+            return this.list.pop();
+        }
+    }
+    
+    get_value(i){
+        return this.list[i].value;
+    }
+    
+    set_value(i,val){
+        this.list[i].value = val;
+    }
+    
+    get_param(i,param_name){
+        return this.list[i].params[param_name];
+    }
+    
+    set_param(i,param_name,param_value){
+        this.list[i].params[param_name] = param_value;
+    }
+    
+    swap(i,j){
+        var a = this.list[i];
+        this.list[i] = this.list[j];
+        this.list[j] = a;
+    }
+    
+    is_equal_to(other){
+        console.log("equal ?")
+        if (other.list == null || this.list == null) return false;
+        if (other.list.length !== this.list.length) return false;
+        for (var i in this.list) {
+          if (this.list[i] !== other.list[i]){
+            return false;
+          }
+          
+        }
+        return true;
     }
     
 }
 
-class ListePonderee extends Liste{
-    constructor(ide = "ma_liste"){
-        super();
-        this.poids = [];    
+class List extends ADT{
+    constructor(list=[],params={},item_params={}){
+        super(list,params,item_params);
     }
-    append(valeur,poids,params={}){
-        super.append(valeur,params);
-        this.poids.push(poids);
+    draw(where=""){
+        super.draw(where,"div");
+        this.drawing.className = "content";
+
+        for(var i in this.list){
+            var item = new Item(this.list[i],this.item_params);
+            item.draw(this.drawing);
+        }
     }
-    permuter(i,j){
-        super.permuter(i,j);
-        var a = this.poids[i];
-        this.poids[i] = this.poids[j];
-        this.poids[j] = a;
+
+}
+
+class Stack extends ADT{
+    constructor(list=[],params={},item_params={}){
+        super(list,params,item_params);
+        this.item_params["type"] = "stack";
+        this.item_params["tag"] = "tr";
+    }
+    
+    draw(where=""){
+        super.draw(where,"table");
+        
+        for(var i in this.list){
+            var item = new Item(this.list[i],this.item_params);
+            item.draw(this.drawing);
+        }
     }
 }
+
 
 
 /********
 utilitaires interface
 *********/
 
-function creer_liste_boutons(labels,ide="boutons"){
-    var pere = document.getElementById(ide);
+function creer_liste_boutons(labels,id="boutons",params={}){
+    var pere = document.getElementById(id);
+    
+    
     var btns = document.createElement("div");
-    btns.className = "buttons are-large is-flex is-justify-content-center";
+    
+    btns.className = "buttons"
+    for(var c in params["classes"]){
+        btns.classList.add(params["classes"][c]);
+    }
+    
     pere.appendChild(btns);
     
+    
+    var tag = params["tag"] ? params["tag"] : "button";
+    
     for (var i = 0; i < labels.length; ++i) {
-        var bt = document.createElement("button");
+        var bt = document.createElement(tag);
         bt.className = "button";
         var lb = document.createTextNode(labels[i]);
         bt.appendChild(lb);
-        bt.onclick = function(){verifier(this);};
+        bt.dataset.value = labels[i];
+        
+        if(params["click"]){
+            bt.addEventListener("click",params["click"]);
+            bt.classList.add("is-clickable");
+        }
+        
+        for(var c in params["classes_btn"]){
+            bt.classList.add(params["classes_btn"][c]);
+        }
+        
+        bt.form = null; // not reload the page
+        
         btns.appendChild(bt);
     }
 }

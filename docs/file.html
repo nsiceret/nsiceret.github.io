@@ -9,6 +9,8 @@
 <body>
 <section class="section">
 <h1 class="title">Les files !</h1>
+    <div class="columns">
+    <div class="column">
   <article class="message is-info">
   <div class="message-header"><p>Instructions</p></div>
   <div class="message-body">
@@ -21,32 +23,38 @@
         <li><strong>Défiler</strong>, c'est-à-dire enlever l'élément qui est <em>au début</em> de la file.</li>
         </ul>
         </div>
-        <div class="content">Dans ce document, nous lirons les files de gauche à droite : le premier élément est à gauche et le dernier à droite.</div>
+        <div class="content">Nous lirons les files comme des textes : de gauche à droite et, si besoin, de haut en bas.</div>
         </div>
     </article>        
-    
-    <article class="message is-success" id="entete-message">
+    </div>
+    <div class="column">
+        <article class="message is-success" id="entete-message">
             <div class="message-header">
-            <div id="message">Sauriez-vous reconstituter la file ci-dessous ?</div>
-            <form>
-                <div class="field has-addons ">
-                    <div class="control">
-                        <div class="button is-static is-success">Enfiler</div>
-                    </div>
-                    <div class="control">
-                        <div class="select"><select id="select" style="display:inline;" onchange="enfiler(this);"></select></div>
-                        <!--  -->
-                    </div>
-                    <div class="control">
-                        <div class="button is-static is-success"> ou </div>
-                    </div>
-                    <div class="control">
-                        <div class="button" onclick="enlever();">défiler</div>
-                    </div>
-                </div>
-            </form>
+                <p id="message">Sauriez-vous reconstituter la file ci-dessous ?</p>
             </div>
             <div class="message-body">
+                <form>  
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            Enfiler
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="buttons" id="btn_enfiler">
+                                </div>
+                            </div>
+                            <div class="field-label is-normal">
+                              ou
+                            </div>
+                            <div class="field-body">
+                                <div class="button is-success" onclick="enlever();">défiler</div>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <p class="help">Cliquez sur l'animal que vous souhaitez ajouter.</p> 
+                    </div>           
+                </form>
                 <div class="columns">
                     <div class="column">
                         <div class="block">Votre file</div>
@@ -59,27 +67,36 @@
                 </div>
             </div>
         </article>
+        </div>
+    </div>
+    <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
 </section>
 <script>
 liste_animaux = ["🦑","🪲","🐼","🦊","🦐","🦆","🐯","🐸"];
-creer_select(liste_animaux.slice());
 
-var p = new File("ta_file");
-p.mettre_dans("file_essai");
+creer_liste_boutons(liste_animaux,
+                    "btn_enfiler",
+                    {"click":enfiler,
+                    "classes_btn":["has-background-success-light"],
+                    "tag":"span"
+                    });
+
+var p = new List([],{},{"classes":["has-background-success-light"]});
+p.draw(document.querySelector("#file_essai"));
+
 
 var file_objectif = liste_animaux.sort(function () {
   return Math.random() - 0.5;
 });
 file_objectif = file_objectif.slice(-5);
+var q = new List(file_objectif,{},{"classes":["has-background-success-light"]});
+q.draw(document.querySelector("#objectif"));
 
-var q = new File();
-for(var c in file_objectif){
-    q.enfiler(file_objectif[c]);
-}
-q.mettre_dans("objectif");
 
-function verifier(elt){
-    if (q.est_egal_a(p)){
+function verifier(){
+    if (q.is_equal_to(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle file.";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
@@ -91,15 +108,19 @@ function verifier(elt){
 }
 
 function enfiler(elt){
-    if(elt.value.length > 0){
-        p.enfiler(elt.value);
+    var value = elt.target.dataset.value;
+    if(value.length > 0){
+        p.push(value);
+        p.draw();
         verifier();
     }
 }
 function enlever(){
-    p.defiler();
+    p.shift();
+    p.draw();
     verifier();
 }
+
 </script>
 </body>
 </html>

@@ -10,78 +10,97 @@
 <section class="section">
 <h1 class="title">Les piles !</h1>
     <div class="columns">
-    <div class="column is-vcentered">
-    <article class="message is-info">
+    <div class="column">
+  <article class="message is-info">
   <div class="message-header"><p>Instructions</p></div>
   <div class="message-body">
         <div class="content">
         Vous disposez d'une <strong>pile</strong>, pour l'instant vide, qui sera 
-        composée d'éléments posés les uns sur les autres. Vous pouvez la modifier de deux manières :
-        </div>
-        <div class="content">
+        composée d'éléments posés les uns sur les autres. 
+        Vous pouvez la modifier de deux manières :
         <ul>
-        <!-- <li><strong>Vider</strong> la pile consiste à enlever tous les éléments de la pile, s'il y en a. On obtient une pile vide.</li> -->
-        <li><strong>Empiler</strong> un élément au sommet de la pile, c'est-à-dire tout en haut. Pour empiler un élément, cliquez sur lui :
-            <div class="block" id="boutons"></div>
-        </li>
-        <li><strong>Dépiler</strong>, c'est-à-dire enlever l'élément qui se trouve au sommet.
-            <div class="buttons is-flex is-justify-content-center">
-         <!-- 
-         <button class="button is-static">Empiler</button>
-         <button class="button" onclick="p.vider()"><span class="icon">🗑</span><span>Vider</span></button> 
-         -->
-             <button class="button" onclick="verifier(this)" value="depiler"><span class="icon">⎋</span><span>Dépiler</span></button>
-             </div>
-        </li>
+        <li><strong>Ajouter</strong> un élément <em>sur la pile</em>, tout en haut, on dit <strong>empiler</strong>.</li>
+        <li><strong>Dépiler</strong>, c'est-à-dire enlever l'élément qui est <em>au sommet</em> de la pile.</li>
         </ul>
         </div>
         </div>
-        </article>        
+    </article>        
     </div>
-    <div class="column is-one-quarter">
+    <div class="column">
         <article class="message is-success" id="entete-message">
-            <div class="message-header"><p id="message">Sauriez-vous reconstituter la pile ci-dessous ?</p>
+            <div class="message-header">
+                <p id="message">Sauriez-vous reconstituter la pile ci-dessous ?</p>
             </div>
-            <div class="message-body is-vcentered">
-            <table class="table">
-                <thead>
-                <th>Votre pile</th>
-                <th>Objectif</th>
-                </thead>
-                <tbody>
-                <tr>
-                <td id="pile_essai" style="vertical-align: bottom;"></td>
-                <td id="objectif" style="vertical-align: bottom;"></td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="message-body">
+                <form>  
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            Empiler
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="buttons" id="btn_empiler">
+                                </div>
+                            </div>
+                            <div class="field-label is-normal">
+                              ou
+                            </div>
+                            <div class="field-body">
+                                <div class="button is-success" onclick="enlever();">dépiler</div>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="field is-horizontal">
+                        <p class="help">Cliquez sur l'animal que vous souhaitez ajouter.</p> 
+                    </div>           
+                </form>
+                <table class="table">
+                    <thead>
+                    <th>Votre pile</th>
+                    <th>Objectif</th>
+                    </thead>
+                    <tbody>
+                    <tr class="has-text-centered">
+                    <td id="pile_essai" style="vertical-align: bottom;" ></td>
+                    <td id="objectif" style="vertical-align: bottom;" ></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </article>
+        </div>
     </div>
+    <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
 </section>
 <script>
 liste_animaux = ["🦑","🪲","🐼","🦊","🦐","🦆","🐯","🐸"];
-creer_liste_boutons(liste_animaux);
 
-var p = new Pile("ta_pile");
-p.mettre_dans("pile_essai");
+creer_liste_boutons(liste_animaux,
+                    "btn_empiler",
+                    {"click":empiler,
+                    "classes_btn":["has-background-success-light"],
+                    "tag":"span"
+                    });
 
-var q = new Pile();
-q.empiler(liste_animaux[entier_aleatoire(0,7)]);
-q.empiler(liste_animaux[entier_aleatoire(0,7)]);
-q.empiler(liste_animaux[entier_aleatoire(0,7)]);
-q.empiler(liste_animaux[entier_aleatoire(0,7)]);
-q.empiler(liste_animaux[entier_aleatoire(0,7)]);
-q.mettre_dans("objectif");
+var p = new Stack(
+                    [],
+                    {},
+                    {"classes":["has-background-success-light","is-size-4"]});
+p.draw(document.querySelector("#pile_essai"));
 
-function verifier(elt){
-    if(elt.value=="depiler"){
-        p.depiler();
-    }else{
-        p.empiler(elt.innerHTML);
-    }
-    
-    if (q.est_egal_a(p)){
+
+var pile_objectif = liste_animaux.sort(function () {
+  return Math.random() - 0.5;
+});
+pile_objectif = pile_objectif.slice(-5);
+var q = new Stack(pile_objectif,{},{"classes":["has-background-success-light","has-text-centered","is-size-4"]});
+q.draw(document.querySelector("#objectif"));
+
+
+function verifier(){
+    if (q.is_equal_to(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle pile.";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
@@ -91,6 +110,21 @@ function verifier(elt){
         document.getElementById("entete-message").classList.remove("is-danger");
     }
 }
+
+function empiler(elt){
+    var value = elt.target.dataset.value;
+    if(value.length > 0){
+        p.push(value);
+        p.draw();
+        verifier();
+    }
+}
+function enlever(){
+    p.pop();
+    p.draw();
+    verifier();
+}
+
 </script>
 </body>
 </html>
