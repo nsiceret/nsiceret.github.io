@@ -42,7 +42,7 @@
                             </p>
                         </header>
                         <div class="card-content">
-                            <table class="table is-justify-content-center is-flex"  id="comparaison">
+                            <table class="table is-justify-content-center is-flex has-background-warning-light"  id="comparaison">
                             </table>
                         </div>                        
                     </div>
@@ -79,11 +79,15 @@
 
 prix = [7,4,8,5,3,1,2,6];
 legumes = ["🍓","🍌","🍏","🍆","🍊","🍍","🍋","🍅"];
+ponderes= [];
+for(var c in prix){
+    ponderes.push([prix[c],legumes[c]]);
+}
 
 selection = [];
 
-l = new ListePonderee();
-
+l = new List(ponderes,{},{"classes":["is-large"],"click":verifier});
+l.draw(document.querySelector("#tableau"));
 permutations = 0;
 clics = 0;
 
@@ -95,23 +99,11 @@ btn_paspermuter.addEventListener("click",paspermuter);
 btn_permuter.innerHTML = "Oui";
 btn_paspermuter.innerHTML = "Non";
 
-function init(){
-    for(i=0; i< legumes.length; ++i){
-        l.append(legumes[i],prix[i],
-            params = {classe:"tag is-large is-clickable",
-                       clic: true
-                      }
-        );
-    }
-    l.mettre_dans("tableau");
-}
-
-init();
-
 function vider_selection(){
     const n = selection.length;
     for(i=0;i < n; ++i){
-        l.get_tagcell(selection[0]).classList.remove("is-success");
+        //l.get_item(selection[0]).drawing.classList.remove("is-success");
+        l.draw();
         selection.shift();
     }
     console.log("sélection vidée "+selection);
@@ -130,7 +122,8 @@ function permuter(){
     msg.innerHTML = "Permuter cellules d'index "+a+" et "+b;
     document.querySelector("#essais").appendChild(msg);
     
-    l.permuter(a,b);
+    l.swap(a,b);
+    l.draw();
     vider_selection();
     afficher_balance()
     verifier_resultat();
@@ -151,10 +144,10 @@ function afficher_balance(){
     c.innerHTML = "";
     
     if(n >= 1){
-        b.innerHTML = b.innerHTML + l.get_innerhtml(selection[0]);
+        b.innerHTML = b.innerHTML + l.list[selection[0]][1];
     }
     if(n ==2){
-        b.innerHTML = b.innerHTML + " "+l.get_innerhtml(selection[1]);
+        b.innerHTML = b.innerHTML + " "+l.list[selection[1]][1];
         
         var ligne1 = c.insertRow();
         var ligne2 = c.insertRow();
@@ -172,7 +165,7 @@ function afficher_balance(){
         // calcul du min et max
         var i;
         var j;
-        if (l.poids[selection[0]]<l.poids[selection[1]]){
+        if (l.list[selection[0]][0]<l.list[selection[1]][0]){
             i = selection[0];
             j = selection[1];
         }else{
@@ -180,17 +173,16 @@ function afficher_balance(){
             j = selection[0];
         }
         
-        var legume = l.get_tagcell(i).cloneNode(true);
-        legume.classList.remove("is-clickable");
+        var brasg = document.createElement("span");
+        brasg.className = "tag is-large";
+        brasg.innerHTML = l.list[i][1];
         var c = ligne2.insertCell();
-        c.className = "has-text-centered";
-        c.appendChild(legume);
+        c.appendChild(brasg);
         
-        var legume = l.get_tagcell(j).cloneNode(true);
-        legume.classList.remove("is-clickable");
+        var brasd = brasg.cloneNode();
+        brasd.innerHTML = l.list[j][1];
         var c = ligne2.insertCell();
-        c.className = "has-text-centered";
-        c.appendChild(legume);
+        c.appendChild(brasd);
         
         var t = ligne1.insertCell();
         t.colSpan="2";
@@ -208,11 +200,11 @@ function afficher_balance(){
     
 }
 function verifier(elt){
-    console.log("vérifier "+selection+" "+elt.innerHTML);
-    var i = elt.parentNode.cellIndex;
+    console.log("vérifier "+selection+" "+elt.target.innerHTML);
+    var i = elt.target.dataset.number;
     if(selection.includes(i)){
         console.log(i+"est dedans");
-        elt.classList.remove("is-success");
+        elt.target.classList.remove("is-success");
         if(i == selection[0]){
             selection.shift();
         }else{
@@ -221,9 +213,9 @@ function verifier(elt){
     }else{
         clics++;
         console.log(i+"n'est pas dedans");
-        elt.classList.add("is-success");
+        elt.target.classList.add("is-success");
         if(selection.length == 2){
-            l.get_tagcell(selection[0]).classList.remove("is-success");
+            l.get_item(selection[0]).drawing.classList.remove("is-success");
             selection.shift();
         }
         selection.push(i);
@@ -236,7 +228,7 @@ function verifier(elt){
 }
 
 function verifier_resultat(){
-    if(liste_triee(l.poids)){
+    if(liste_triee(l.list.map(x => x[0]))){
         document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+permutations+" permutations et "+clics+" déplacements de sacs vers la balance !";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");

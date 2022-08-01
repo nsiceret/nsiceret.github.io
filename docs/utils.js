@@ -1,6 +1,12 @@
 class Item{
-    constructor(value, params={}){
-        this.value = value;
+    constructor(item, params={}){
+        if(Array.isArray(item)){
+            this.value = item[0];
+            this.display = item[1];
+        }else{
+            this.value = item;
+            this.display = item;
+        }
         this.params = params;
         this.drawing = undefined;
         this.container = undefined;
@@ -17,7 +23,7 @@ class Item{
             
             var newCell = this.drawing.insertCell();
             
-            var txt = document.createTextNode(this.value);
+            var txt = document.createTextNode(this.display);
             var content = document.createElement("span");
             newCell.appendChild(content);
             content.appendChild(txt);
@@ -39,7 +45,7 @@ class Item{
             this.drawing.className = this.type;
             this.drawing.classList.add(this.size);
             
-            var txt = document.createTextNode(this.value);
+            var txt = document.createTextNode(this.display);
             this.drawing.appendChild(txt);
             
             this.container.drawing.appendChild(this.drawing);
