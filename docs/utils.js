@@ -152,6 +152,19 @@ class ADT{
     get_item(i){
         return this.items[i];
     }
+
+    get_htmlitem(i){
+        var r = '[data-number="'+i+'"]';
+        return this.drawing.querySelector(r);
+    }
+
+    remove_class_item(i,c){
+        this.get_htmlitem(i).classList.remove(c);
+    }
+
+    add_class_item(i,c){
+        this.get_htmlitem(i).classList.add(c);
+    }
     
     is_equal_to(other){
         console.log("equal ?")

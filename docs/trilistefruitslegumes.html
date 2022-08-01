@@ -102,8 +102,7 @@ btn_paspermuter.innerHTML = "Non";
 function vider_selection(){
     const n = selection.length;
     for(i=0;i < n; ++i){
-        //l.get_item(selection[0]).drawing.classList.remove("is-success");
-        l.draw();
+        l.remove_class_item(selection[0],"is-success");
         selection.shift();
     }
     console.log("sélection vidée "+selection);
@@ -215,7 +214,8 @@ function verifier(elt){
         console.log(i+"n'est pas dedans");
         elt.target.classList.add("is-success");
         if(selection.length == 2){
-            l.get_item(selection[0]).drawing.classList.remove("is-success");
+            console.log("modif : "+selection[0]+" "+l.get_item(selection[0]).display);
+            l.remove_class_item(selection[0],"is-success");
             selection.shift();
         }
         selection.push(i);
