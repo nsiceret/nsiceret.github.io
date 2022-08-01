@@ -37,6 +37,13 @@ class Item{
                     content.setAttribute("style", this.params["style"][c]);
                 }
             }
+
+            if(this.params["click"]){
+                content.addEventListener("click",this.params["click"]);
+                content.classList.add("is-clickable");
+            }else{
+                content.classList.remove("is-clickable");
+            }
             
                   
         }else{
@@ -59,14 +66,14 @@ class Item{
                     this.drawing.setAttribute("style", this.params["style"][c]);
                 }
             }
+
+            if(this.params["click"]){
+                this.drawing.addEventListener("click",this.params["click"]);
+                this.drawing.classList.add("is-clickable");
+            }else{
+                this.drawing.classList.remove("is-clickable");
+            }
             
-        }
-        
-        if(this.params["click"]){
-            this.drawing.addEventListener("click",this.params["click"]);
-            this.drawing.classList.add("is-clickable");
-        }else{
-            this.drawing.classList.remove("is-clickable");
         }
         
         this.drawing.dataset.value = this.value;
@@ -103,6 +110,12 @@ class ADT{
                 this.drawing.classList.add(this.params["classes"][c]);
             }
         }
+
+        for(var i in this.list){
+            var item = new Item(this.list[i],this.item_params);
+            item.draw(this);
+            item.drawing.dataset.number = i;
+        }
     }
     
     is_empty(){
@@ -133,6 +146,10 @@ class ADT{
         }
     }
     
+    get_item(i){
+        return this.items[i];
+    }
+
     get_value(i){
         return this.list[i];
     }
@@ -149,23 +166,6 @@ class ADT{
         this.params[param_name] = param_value;
     }
     
-    get_item(i){
-        return this.items[i];
-    }
-
-    get_htmlitem(i){
-        var r = '[data-number="'+i+'"]';
-        return this.drawing.querySelector(r);
-    }
-
-    remove_class_item(i,c){
-        this.get_htmlitem(i).classList.remove(c);
-    }
-
-    add_class_item(i,c){
-        this.get_htmlitem(i).classList.add(c);
-    }
-    
     is_equal_to(other){
         console.log("equal ?")
         if (other.list == null || this.list == null) return false;
@@ -178,6 +178,31 @@ class ADT{
         }
         return true;
     }
+
+    get_html_item(i){
+        var r = '[data-number="'+i+'"]';
+        return this.drawing.querySelector(r);
+    }
+
+    remove_class_item(i,c){
+        var it = this.get_html_item(i);
+        it.classList.remove(c);
+        if(it.tagName.toLowerCase() == 'tr'){
+            it.firstChild.classList.remove(c);
+            it.firstChild.firstChild.classList.remove(c);
+        }
+        
+    }
+
+    add_class_item(i,c){
+        var it = this.get_html_item(i);
+        it.classList.add(c);
+        console.log("add class : "+it.tagName);
+        if(it.tagName.toLowerCase() == 'tr'){
+            it.firstChild.classList.add(c);
+            it.firstChild.firstChild.classList.add(c);
+        }
+    }
     
 }
 
@@ -188,12 +213,6 @@ class List extends ADT{
     draw(where=""){
         super.draw(where,"div");
         this.drawing.className = "content";
-
-        for(var i in this.list){
-            var item = new Item(this.list[i],this.item_params);
-            item.draw(this);
-            item.drawing.dataset.number = i;
-        }
     }
 
     swap(i,j){
@@ -201,7 +220,6 @@ class List extends ADT{
         this.list[i] = this.list[j];
         this.list[j] = a;
     }
-
 }
 
 class Stack extends ADT{
@@ -213,13 +231,8 @@ class Stack extends ADT{
     
     draw(where=""){
         super.draw(where,"table");
-        
-        for(var i in this.list){
-            var item = new Item(this.list[i],this.item_params);
-            item.draw(this);
-        }
     }
-    
+
     reverse(n){
         var s = new Stack();
         for(var i=0; i<= n; ++i){

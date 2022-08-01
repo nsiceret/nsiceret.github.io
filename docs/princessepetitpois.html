@@ -70,12 +70,31 @@ const liste_matelas = [
 "Le plus grand de tous les matelas de la princesse",
 "Un très très grand matelas"
 ];
-
+const liste_couleurs = [
+    "is-gray",
+    "is-success",
+    "is-danger",
+    "is-warning",
+    "is-info",
+    "is-dark"
+]
 
 p = new Stack(liste_matelas,{},{"tag":"tag"});
 essais = 0;
 retournements = 0;
+
+couleurs = new Stack(liste_couleurs); // pour retourner aussi les couleurs
+
 init();
+
+function dessiner(){
+     p.draw(document.querySelector("#lit"));
+    // couleurs
+    for(var i in liste_couleurs){
+        p.add_class_item(i,couleurs.list[i]);
+    }
+
+}
 
 function init(){
     p.empty();
@@ -83,20 +102,19 @@ function init(){
             liste_matelas,
             {},
             {"click":verifier,
-             "classes":["is-large","is-relative","mx-auto","is-success"],
+             "classes":["is-large","is-relative","mx-auto"],
              "tag":"tag"
             }
             );
-    p.draw(document.querySelector("#lit"));
-    
-    var cl = p.get_item(2).params["classes"].slice();
+   dessiner();
 }
 
 
 function verifier(elt){
-    const n = elt.target.parentNode.parentNode.rowIndex;    // le clic se passe sur le td !!  
+    const n = elt.target.parentNode.parentNode.rowIndex;    // le clic se passe sur le texte !!
     p.reverse(n);
-    p.draw();
+    couleurs.reverse(n);
+    dessiner();
     essais ++;
     retournements += n+1;
     var essai = document.createElement("div");
