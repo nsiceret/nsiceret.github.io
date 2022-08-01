@@ -56,37 +56,31 @@ liste = [9,7,4,8,5,3,1,2,6];
 
 dernier_clic = -1;
 
-l = new Liste();
-initiale = new Liste();
+l = new List(liste,{},{"click":verifier});
+initiale = new List(liste);
 
 permutations = 0;
 
 function init(){
-    for(i=0; i< liste.length; ++i){
-        l.append(liste[i],
-            params = { classe:"tag is-large is-clickable",
-                       clic: true
-                      }
-        );
-        initiale.append(liste[i]);
-    }
-    l.mettre_dans("tableau");
-    initiale.mettre_dans("initiale");
+    l.draw(document.querySelector("#tableau"));
+    initiale.draw(document.querySelector("#initiale"));
 }
 
 init();
 
 function verifier(elt){
-    var i = elt.parentNode.cellIndex;
+    var i = elt.target.dataset.number;
+    var item = l.get_item(i);
     if(dernier_clic == -1){
-        elt.classList.add("is-success");
+        elt.target.classList.add("is-success");
         dernier_clic = i;
     }else if(dernier_clic == i){
         dernier_clic = -1;
-        elt.classList.remove("is-success");
+        item.drawing.classList.remove("is-success");
     }else{
-        l.get_tagcell(dernier_clic).classList.remove("is-success");
-        l.permuter(dernier_clic,i);
+        l.get_item(dernier_clic).drawing.classList.remove("is-success");
+        l.swap(dernier_clic,i);
+        l.draw();
         permutations++;
         
         var msg = document.createElement("div");
@@ -96,7 +90,7 @@ function verifier(elt){
         
         dernier_clic = -1;
     }
-    if(liste_triee(l.liste)){
+    if(liste_triee(l.list)){
         document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+permutations+" permutations !";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");

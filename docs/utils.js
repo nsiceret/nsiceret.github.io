@@ -147,12 +147,6 @@ class ADT{
         return this.items[i];
     }
     
-    swap(i,j){
-        var a = this.list[i];
-        this.list[i] = this.list[j];
-        this.list[j] = a;
-    }
-    
     is_equal_to(other){
         console.log("equal ?")
         if (other.list == null || this.list == null) return false;
@@ -179,7 +173,14 @@ class List extends ADT{
         for(var i in this.list){
             var item = new Item(this.list[i],this.item_params);
             item.draw(this);
+            item.drawing.dataset.number = i;
         }
+    }
+
+    swap(i,j){
+        var a = this.list[i];
+        this.list[i] = this.list[j];
+        this.list[j] = a;
     }
 
 }
