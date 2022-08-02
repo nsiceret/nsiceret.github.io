@@ -36,7 +36,7 @@
             </div>
             <div class="block">
                 <div class="content">
-                    <svg width="350"  maxwidth="100%" height="350" id="box">
+                    <svg width="600"  maxwidth="100%" height="350" id="box">
                     </svg>
                 </div>
             </div>
@@ -95,10 +95,11 @@ let chiffres = [n,0,0,0,0];
 let niveau_fini = -1;
 var selection = [];
 let intervalle = null;
-const ecart=25;   //écart entre les bulles
+const ecart = 60;   //écart entre les bulles
+let x = 0;
+let y = ecart/2;
 
-let largeur = Math.min(350,Number(document.querySelector("#container").offsetWidth));
-let coords = [];
+let largeur = Math.min(500,Number(document.querySelector("#container").offsetWidth));
 let base = document.createElementNS(svgns, "circle");
 base.setAttribute("onclick","clickCircle(this);");
 let r = 10;
@@ -122,30 +123,25 @@ function creer_cercle(niveau,id,x,y){
 }
 
 function regler_largeur(){
-    return Math.min(350,Number(document.querySelector("#container").offsetWidth));
+    return Math.min(500,Number(document.querySelector("#container").offsetWidth));
 }
 
 function init(){
     n = Number(document.querySelector("#volume").value);
     document.querySelector("#box").innerHTML="";
-    document.querySelector("#box").width = largeur;
+    document.querySelector("#box").setAttribute("width",largeur);
     document.querySelector("#total").innerHTML = n;
     chiffres = [n,0,0,0,0];
     niveau_fini = -1;
     selection = [];
     intervalle = null;
     largeur = regler_largeur();
+    x = -ecart/2;
+    y = ecart/2;
 
     for(var i = 0 ; i < n ; ++i){
-        let x = creer_x();
-        let y = creer_y();
-        while(coords.includes(1000*x+y)){
-            alert("superposition !");
-            x = creer_x();
-            y = creer_y();
-        }
+        creer_x();
         creer_cercle(0,i,x,y);
-        coords.push(1000*x+y);
     }
     actualiser_tableau();
 }
@@ -163,11 +159,14 @@ function actualiser_tableau(){
 init(17);
 
 function creer_x(){
-    return Math.floor(Math.random()*(largeur-20)/ecart)*ecart+10;
-}
-
-function creer_y(){
-    return Math.floor(Math.random()*330/ecart)*ecart+10;
+    if(x + ecart>= (largeur-ecart/2)){
+        x = ecart/2;
+        y = y + ecart;
+    }else{
+        x = x + ecart;
+    }
+    document.querySelector("#box").setAttribute("height" ,y + ecart/2);
+    //return Math.floor(Math.random()*(largeur-20)/ecart)*ecart+10;
 }
 
 function gerer_chiffres(niveau){
@@ -199,7 +198,7 @@ function distance(){
 function fusionner(){
     clearInterval(intervalle);
     let niveau = Number(selection[0].dataset.niveau)+1;
-    creer_cercle(niveau,selection[0].getAttribute("id"),selection[0].getAttribute("cx"),selection[0].getAttribute("cy"));
+    creer_cercle(niveau,selection[1].getAttribute("id"),selection[1].getAttribute("cx"),selection[1].getAttribute("cy"));
     gerer_chiffres(niveau-1);
     selection[0].remove();
     selection[1].remove();
