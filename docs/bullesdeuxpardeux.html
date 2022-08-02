@@ -98,7 +98,7 @@ let intervalle = null;
 const ecart=25;   //écart entre les bulles
 
 let largeur = Math.min(350,Number(document.querySelector("#container").offsetWidth));
-
+let coords = [];
 let base = document.createElementNS(svgns, "circle");
 base.setAttribute("onclick","clickCircle(this);");
 let r = 10;
@@ -139,7 +139,13 @@ function init(){
     for(var i = 0 ; i < n ; ++i){
         let x = creer_x();
         let y = creer_y();
+        while(coords.includes(1000*x+y)){
+            alert("superposition !");
+            x = creer_x();
+            y = creer_y();
+        }
         creer_cercle(0,i,x,y);
+        coords.push(1000*x+y);
     }
     actualiser_tableau();
 }
