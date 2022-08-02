@@ -11,7 +11,7 @@
     <article class="message is-info">
         <div class="message-header"><p>Instructions</p>
         </div>
-        <div class="message-body">
+        <div class="message-body" id="container">
             <div class="block">
                 <p>Cliquez sur deux bulles identiques, puis recommencez autant que possible...</p>
                 <p>Pour déselectionner une bulle, cliquez une deuxième fois sur elle.</p>
@@ -36,7 +36,7 @@
             </div>
             <div class="block">
                 <div class="content">
-                    <svg width="350" height="350" id="box">
+                    <svg width="350"  maxwidth="100%" height="350" id="box">
                     </svg>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                                     <svg width="60" height="60">
                                         <circle cx="30" cy="30" r="30" fill="hsl(348, 100%, 61%)"></circle>
                                     </svg>
-                                </span>e
+                                </span>
                             </td>
                             <td id="chiffre3">
                                 <svg width="50" height="50">
@@ -96,6 +96,8 @@ let niveau_fini = -1;
 var selection = [];
 let intervalle = null;
 
+let largeur = Math.min(350,Number(document.querySelector("#container").offsetWidth));
+
 let coords = [];
 
 let base = document.createElementNS(svgns, "circle");
@@ -119,22 +121,28 @@ function creer_cercle(niveau,id,x,y){
     c.setAttribute("cy", y);
 }
 
+function regler_largeur(){
+    return Math.min(350,Number(document.querySelector("#container").offsetWidth));
+}
+
 function init(){
     n = Number(document.querySelector("#volume").value);
     document.querySelector("#box").innerHTML="";
+    document.querySelector("#box").width = largeur;
     document.querySelector("#total").innerHTML = n;
     chiffres = [n,0,0,0,0];
     niveau_fini = -1;
     selection = [];
     intervalle = null;
+    largeur = regler_largeur();
 
     coords = [];
     for(var i=0 ; i < n ; ++i){
-        let x = creer_coord();
-        let y = creer_coord();
+        let x = creer_x();
+        let y = creer_y();
         while(coords.includes([x,y])){
-            x = creer_coord();
-            y = creer_coord();
+            x = creer_x();
+            y = creer_y();
         }
         creer_cercle(0,i,x,y);
     }
@@ -153,7 +161,11 @@ function actualiser_tableau(){
 
 init(17);
 
-function creer_coord(){
+function creer_x(){
+    return Math.floor(Math.random()*(largeur/10-5))*10+10;
+}
+
+function creer_y(){
     return Math.floor(Math.random()*34)*10+10;
 }
 
@@ -221,8 +233,6 @@ function clickCircle(evt) {
         selection.push(evt);
     }
 }
-
-
 </script>
 </body>
 </html>
