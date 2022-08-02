@@ -95,10 +95,9 @@ let chiffres = [n,0,0,0,0];
 let niveau_fini = -1;
 var selection = [];
 let intervalle = null;
+const ecart=25;   //écart entre les bulles
 
 let largeur = Math.min(350,Number(document.querySelector("#container").offsetWidth));
-
-let coords = [];
 
 let base = document.createElementNS(svgns, "circle");
 base.setAttribute("onclick","clickCircle(this);");
@@ -119,6 +118,7 @@ function creer_cercle(niveau,id,x,y){
     c.setAttribute("fill",couleurs[niveau]);
     c.setAttribute("cx", x);
     c.setAttribute("cy", y);
+    c.setAttribute("z-index",(10-niveau));
 }
 
 function regler_largeur(){
@@ -136,14 +136,9 @@ function init(){
     intervalle = null;
     largeur = regler_largeur();
 
-    coords = [];
-    for(var i=0 ; i < n ; ++i){
+    for(var i = 0 ; i < n ; ++i){
         let x = creer_x();
         let y = creer_y();
-        while(coords.includes([x,y])){
-            x = creer_x();
-            y = creer_y();
-        }
         creer_cercle(0,i,x,y);
     }
     actualiser_tableau();
@@ -162,11 +157,11 @@ function actualiser_tableau(){
 init(17);
 
 function creer_x(){
-    return Math.floor(Math.random()*(largeur/10-5))*10+10;
+    return Math.floor(Math.random()*(largeur-20)/ecart)*ecart+10;
 }
 
 function creer_y(){
-    return Math.floor(Math.random()*34)*10+10;
+    return Math.floor(Math.random()*330/ecart)*ecart+10;
 }
 
 function gerer_chiffres(niveau){
@@ -207,9 +202,10 @@ function fusionner(){
 
 function rapprocher(){
     let d = distance();
+    const vitesse = 3;
     if(d > 5){
-        selection[0].setAttribute("cx",Number(selection[0].getAttribute("cx"))+dx()/d);
-        selection[0].setAttribute("cy",Number(selection[0].getAttribute("cy"))+dy()/d);
+        selection[0].setAttribute("cx",Number(selection[0].getAttribute("cx"))+vitesse*dx()/d);
+        selection[0].setAttribute("cy",Number(selection[0].getAttribute("cy"))+vitesse*dy()/d);
     }else{
         fusionner();
     }
@@ -225,7 +221,7 @@ function clickCircle(evt) {
             selection.pop();
         }else{
             selection.push(evt);
-            intervalle = setInterval(rapprocher,2); 
+            intervalle = setInterval(rapprocher,1); 
         }    
     }else{
         evt.setAttribute("stroke","black");
