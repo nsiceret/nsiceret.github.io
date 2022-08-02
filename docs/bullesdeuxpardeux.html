@@ -15,6 +15,24 @@
             <div class="block">
                 <p>Cliquez sur deux bulles identiques, puis recommencez autant que possible...</p>
                 <p>Pour déselectionner une bulle, cliquez une deuxième fois sur elle.</p>
+                <span class="icon-text">
+                    <span>Vous pouvez choisir le nombre de </span> 
+                    <span class="icon">
+                        <svg width="20" height="20">
+                             <circle cx="10" cy="10" r="10" fill="hsl(0, 0%, 71%)"></circle>
+                        </svg>
+                    </span>
+                    <span>en bougeant le curseur.</span>
+                </span>
+            </div>
+            <div class="block">
+                <div class="content">
+                    <input type="range" id="volume" name="total"
+                     min="1" max="31" value="17" width="350px"
+                     oninput = "init();"
+                     >
+                    <label for="total" id="total">17</label>
+                </div>
             </div>
             <div class="block">
                 <div class="content">
@@ -25,7 +43,7 @@
             <div class="block">
                 <table>
                     <thead>
-                        <th colspan="5">Balles restantes</th>
+                        <th colspan="5">Bulles restantes</th>
                     </thead>
                     <tbody>
                         <tr>
@@ -34,7 +52,7 @@
                                     <svg width="60" height="60">
                                         <circle cx="30" cy="30" r="30" fill="hsl(348, 100%, 61%)"></circle>
                                     </svg>
-                                </span>
+                                </span>e
                             </td>
                             <td id="chiffre3">
                                 <svg width="50" height="50">
@@ -71,8 +89,14 @@
     </article>        
 </section>
 <script>
-const n = 17;
+let n = 17;
 const svgns = "http://www.w3.org/2000/svg";
+let chiffres = [n,0,0,0,0];
+let niveau_fini = -1;
+var selection = [];
+let intervalle = null;
+
+let coords = [];
 
 let base = document.createElementNS(svgns, "circle");
 base.setAttribute("onclick","clickCircle(this);");
@@ -95,28 +119,42 @@ function creer_cercle(niveau,id,x,y){
     c.setAttribute("cy", y);
 }
 
+function init(){
+    n = Number(document.querySelector("#volume").value);
+    document.querySelector("#box").innerHTML="";
+    document.querySelector("#total").innerHTML = n;
+    chiffres = [n,0,0,0,0];
+    niveau_fini = -1;
+    selection = [];
+    intervalle = null;
 
+    coords = [];
+    for(var i=0 ; i < n ; ++i){
+        let x = creer_coord();
+        let y = creer_coord();
+        while(coords.includes([x,y])){
+            x = creer_coord();
+            y = creer_coord();
+        }
+        creer_cercle(0,i,x,y);
+    }
+    actualiser_tableau();
+}
 
-let chiffres = [n,0,0,0,0];
-let niveau_fini = -1;
-var selection = [];
-let intervalle = null;
+function actualiser_tableau(){
+    for(var i = 0; i < 5 ; i++){
+        document.querySelector("#reste"+i).innerHTML = chiffres[i];
+    }
+    if(Math.max(...chiffres)==1){
+        alert("C'est fini ! On ne peut plus regrouper de bulles.");
+    }
 
-let coords = [];
+}
 
+init(17);
 
 function creer_coord(){
     return Math.floor(Math.random()*34)*10+10;
-}
-
-for(var i=0 ; i < n ; ++i){
-    let x = creer_coord();
-    let y = creer_coord();
-    while(coords.includes([x,y])){
-        x = creer_coord();
-        y = creer_coord();
-    }
-    creer_cercle(0,i,x,y);
 }
 
 function gerer_chiffres(niveau){
@@ -127,12 +165,7 @@ function gerer_chiffres(niveau){
             niveau_fini ++;
         }
     }
-    for(var i = 0; i < 5 ; i++){
-        document.querySelector("#reste"+i).innerHTML = chiffres[i];
-    }
-    if(Math.max(...chiffres)==1){
-        alert("C'est fini !");
-    }
+    actualiser_tableau();
 }
 function dx(){
     let x0 = Number(selection[0].getAttribute("cx"));
@@ -173,7 +206,7 @@ function rapprocher(){
 function clickCircle(evt) {
     if(selection.length > 0){
         if(evt.dataset.niveau != selection[0].dataset.niveau){
-            alert("Il faut cliquer sur deux balles identiques !");
+            alert("Il faut cliquer sur deux bulles identiques !");
         }
         else if(evt.id == selection[0].id){
             evt.setAttribute("stroke-width","0");
