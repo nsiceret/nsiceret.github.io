@@ -86,13 +86,13 @@ for(var c in prix){
 
 selection = [];
 
-l = new List(ponderes,{},{"classes":["is-large"],"click":verifier});
+l = new List(ponderes,{},{"classes":["is-large","has-background-warning-light"],"click":verifier});
 l.draw(document.querySelector("#tableau"));
 permutations = 0;
 clics = 0;
 
 btn_permuter = document.createElement("span");
-btn_permuter.className = "tag is-clickable is-medium";
+btn_permuter.className = "tag is-clickable is-medium is-warning";
 btn_paspermuter = btn_permuter.cloneNode();
 btn_permuter.addEventListener("click",permuter);
 btn_paspermuter.addEventListener("click",paspermuter);
@@ -173,7 +173,7 @@ function afficher_balance(){
         }
         
         var brasg = document.createElement("span");
-        brasg.className = "tag is-large";
+        brasg.className = "tag is-large has-background-warning-light";
         brasg.innerHTML = l.list[i][1];
         var c = ligne2.insertCell();
         c.appendChild(brasg);
@@ -185,7 +185,7 @@ function afficher_balance(){
         
         var t = ligne1.insertCell();
         t.colSpan="2";
-        t.className = "has-text-centered";
+        t.className = "has-text-centered is-warningg";
         t.innerHTML="Permuter ?";
         
         c = ligne2.insertCell();

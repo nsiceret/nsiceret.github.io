@@ -56,8 +56,8 @@ liste = [9,7,4,8,5,3,1,2,6];
 
 dernier_clic = -1;
 
-l = new List(liste,{},{"click":verifier});
-initiale = new List(liste);
+l = new List(liste,{},{"click":verifier,"classes":["has-background-warning-light"]});
+initiale = new List(liste,{},{"classes":["has-background-info-light"]});
 
 permutations = 0;
 
@@ -70,15 +70,16 @@ init();
 
 function verifier(elt){
     var i = elt.target.dataset.number;
-    var item = l.get_item(i);
     if(dernier_clic == -1){
-        elt.target.classList.add("is-success");
+        elt.target.classList.remove("has-background-warning-light");
+        elt.target.classList.add("has-background-warning");
         dernier_clic = i;
     }else if(dernier_clic == i){
         dernier_clic = -1;
-        item.drawing.classList.remove("is-success");
+        elt.target.classList.add("has-background-warning-light");
+        elt.target.classList.remove("has-background-warning");        
     }else{
-        l.get_item(dernier_clic).drawing.classList.remove("is-success");
+        l.get_item(dernier_clic).drawing.classList.remove("has-background-warning");
         l.swap(dernier_clic,i);
         l.draw();
         permutations++;
