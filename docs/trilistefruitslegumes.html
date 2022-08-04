@@ -203,7 +203,8 @@ function verifier(elt){
     var i = elt.target.dataset.number;
     if(selection.includes(i)){
         console.log(i+"est dedans");
-        elt.target.classList.remove("is-success");
+        elt.target.classList.remove("has-background-warning");
+        elt.target.classList.add("has-background-warning-light");
         if(i == selection[0]){
             selection.shift();
         }else{
@@ -212,9 +213,11 @@ function verifier(elt){
     }else{
         clics++;
         console.log(i+"n'est pas dedans");
-        elt.target.classList.add("is-success");
+        elt.target.classList.add("has-background-warning");
+        elt.target.classList.remove("has-background-warning-light");
         if(selection.length == 2){
-            l.remove_class_item(selection[0],"is-success");
+            l.remove_class_item(selection[0],"has-background-warning");
+            l.add_class_item(selection[0],"has-background-warning-light");
             selection.shift();
         }
         selection.push(i);
