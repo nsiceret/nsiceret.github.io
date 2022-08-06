@@ -92,7 +92,7 @@ class ADT{
     }
     
     draw(where="",tag){
-        this.container = where ? where : this.container; // change only if where is given
+        this.container = where ? where : this.container; // change only if 'where' is given
         this.container.innerHTML = "";
 
         this.drawing = document.createElement(tag);
@@ -251,6 +251,130 @@ class Stack extends ADT{
     }
 }
 
+class BinaryTree extends ADT{
+    constructor(list=[],params={},item_params={}){
+        super(list,params,item_params);
+        this.dist = 72;
+        this.coords = [];
+        //coordinates of nodes
+        this.calculate_coords();
+        this.NLR_list = [];
+    }
+    calculate_coords(){
+        // number of levels
+        this.levels = Math.floor(Math.log(this.list.length)/Math.log(2))+1;
+        
+        // calculate coords
+        var branch = 0;
+        var total = 0;
+        for(var level = 0; level < this.levels; level++){
+            var y = (level)*this.dist;
+            var sibling_dist = 2*this.dist/Math.pow(2,level-1);
+            var nodes = Math.pow(2,level); // number of nodes
+    
+            for(var branch = 0; branch < nodes; branch++){
+                var x = total + branch*sibling_dist;
+                this.coords.push([x,y]);
+            }
+
+            total = total - (sibling_dist/4);
+        }
+    }
+
+
+    draw(where=""){
+        //super.draw(where,"svg");
+        this.container = where ? where : this.container; // change only if 'where' is given
+        this.container.innerHTML = "";
+
+        this.drawing = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        
+        this.container.appendChild(this.drawing);
+        //this.drawing.setAttribute("xmlns","http://www.w3.org/2000/svg");
+        //this.drawing.setAttribute("xmlns:xlink","http://www.w3.org/1999/xlink");
+        this.drawing.setAttribute("width","300");
+        this.drawing.setAttribute("height","210");
+
+        var arbre = document.createElementNS('http://www.w3.org/2000/svg',"g");
+        this.drawing.appendChild(arbre);
+        arbre.setAttribute("transform","translate("+this.dist*2+" ,30)");
+
+        // draw edges first
+        for(var i = 0; i < this.list.length; i++){
+            if(this.list[i]){
+                let x = this.coords[i][0];
+                let y = this.coords[i][1];
+                if(i > 0){
+                    var par_no = Math.floor((i-1)/2);
+                    var edge = document.createElementNS('http://www.w3.org/2000/svg',"line");
+                    edge.setAttribute("x1",this.coords[par_no][0]);
+                    edge.setAttribute("y1",this.coords[par_no][1]);
+                    edge.setAttribute("x2",x);
+                    edge.setAttribute("y2",y);
+                    arbre.appendChild(edge);
+                }
+            }
+        }
+        // draw nodes
+        for(var i = 0; i < this.list.length; i++){
+            if(this.list[i]){
+                let x = this.coords[i][0];
+                let y = this.coords[i][1];
+
+                var node = document.createElementNS('http://www.w3.org/2000/svg',"g");
+                var ellipse = document.createElementNS('http://www.w3.org/2000/svg',"ellipse");
+                var text = document.createElementNS('http://www.w3.org/2000/svg',"text");
+                node.appendChild(ellipse);
+                node.appendChild(text);
+                arbre.appendChild(node);
+
+                if(this.item_params["click"]){
+                    node.setAttribute("onclick",this.item_params["click"]);
+                    node.classList.add("is-clickable");
+                }
+                node.dataset.value = this.list[i];
+                node.dataset.index = i;
+                node.setAttribute("id",this.container.id+"_node_"+i);
+
+                text.innerHTML = this.list[i];
+                text.setAttribute("text-anchor","middle");
+
+                ellipse.setAttribute("rx", 27);
+                ellipse.setAttribute("ry",27);
+
+                ellipse.setAttribute("cx", x);
+                ellipse.setAttribute("cy", y);
+                ellipse.setAttribute("id",this.container.id+"_ellipse_"+i);
+
+                text.setAttribute("x", x);
+                text.setAttribute("y", y+9);
+                text.setAttribute("id",this.container.id+"_text_"+i);
+            }
+        }
+    }
+
+    get_ellipse(i){
+        return document.querySelector("#"+this.container.id+"_ellipse_"+i);
+    }
+    get_text(i){
+        return document.querySelector("#"+this.container.id+"_text_"+i);
+    }
+    get_node(i){
+        return document.querySelector("#"+this.container.id+"_node_"+i);
+    }
+
+    NLR(i){   //DFS : node, left, right
+        if(this.list[i]){
+            this.NLR_list.push(this.list[i]);
+            if(2*i+1 < this.list.length){
+                this.NLR(2*i+1);
+            }
+            if(2*i+2 < this.list.length){
+                this.NLR(2*i+2);
+            }
+        }
+    }
+}
 
 
 /********

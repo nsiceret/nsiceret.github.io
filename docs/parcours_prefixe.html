@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Parcours en profondeur préfixe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="utils.js"></script>
+<style>
+    .node{
+        background-color:  hsl(204, 86%, 53%);
+    }
+    text{
+        color: white;
+        fill: white;
+        font-size: 150%;
+        text-anchor: "middle";
+    }
+    ellipse{
+        fill: hsl(141, 53%, 53%);
+
+    }
+    line{
+        stroke-width: 3;
+        fill: none;
+        stroke: hsl(217, 71%, 53%);
+    }
+</style>
+</head>
+<body>
+<section class="section">
+    <h1 class="title">Parcours préfixe d'un arbre binaire</h1>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>Instructions</p></div>
+                <div class="message-body">
+                    <div class="block">
+                        Cliquez sur les nœuds de l'arbre binaire en suivant l'ordre du parcours préfixe. Vous pouvez revenir en arrière en cliquant à nouveau sur le dernier nœud sélectionné.
+                    </div>
+                    <div id="arbre" class="block content">
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="column">
+            <article class="message is-success" id="entete-message">
+                <div class="message-header"><p>Votre liste</p></div>
+                <div class="message-body">
+                    <p class="block" id="message" >
+                        J'écrirai la liste des nœuds cliqués ci-dessous.
+                    </p>
+                    <div id="liste" class="block content">
+                    </div>
+                </div>
+            </article>
+        </div>       
+</section>
+<script>
+liste_animaux = ["🦑","🪲","🐼","🦊","🦆","🐯",""];    //"🐼","🐸"];
+
+//liste_animaux = [1,2,3,4,,,7];
+
+let arbre = new BinaryTree(liste_animaux,{},{"click":"verifier(this);"});
+arbre.draw(document.querySelector("#arbre"));
+// calcul du parcours préfixe
+arbre.NLR(0);
+
+let prefixe = new List(arbre.NLR_list);
+let ta_liste = new List();
+ta_liste.draw(document.querySelector("#liste"));
+let clics = [];
+
+function gerer_cliquable(){
+    for(var i in clics){
+        if(i < clics.length-1){
+            arbre.get_node(clics[i]).removeAttribute("onclick");
+            arbre.get_node(clics[i]).classList.remove('is-clickable');
+        }else{
+            arbre.get_node(clics[i]).setAttribute("onclick","verifier(this);");
+            arbre.get_node(clics[i]).classList.add('is-clickable');
+        }
+    }
+}
+
+function selectionner(i){
+    let t = arbre.get_text(i).innerHTML;
+    ta_liste.push(t);
+    ta_liste.draw();
+    clics.push(i);
+    arbre.get_ellipse(i).setAttribute("stroke","black");
+    arbre.get_ellipse(i).setAttribute("stroke-width","3");
+    gerer_cliquable();
+}
+
+function deselectionner(i){
+    arbre.get_ellipse(i).setAttribute("stroke","none");
+    arbre.get_ellipse(i).setAttribute("stroke-width","0");
+    ta_liste.pop();
+    ta_liste.draw();
+    clics.pop();
+    gerer_cliquable();
+}
+
+function verifier(evt){
+    let i = evt.dataset.index;
+    if(clics.length == 0){
+        selectionner(i);
+    }else if(clics[clics.length-1] == i){
+        deselectionner(i);
+    }else{
+        selectionner(i);
+    }
+    if(ta_liste.is_equal_to(prefixe)){
+        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi !";
+        document.getElementById("entete-message").classList.remove("is-success");
+        document.getElementById("entete-message").classList.add("is-danger");
+        
+        //document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
+    }else{
+        document.getElementById("message").innerHTML = "J'écrirai la liste des nœuds cliqués ci-dessous.";
+        document.getElementById("entete-message").classList.add("is-success");
+        document.getElementById("entete-message").classList.remove("is-danger");
+    }
+}
+</script>
+</body>
+</html>
