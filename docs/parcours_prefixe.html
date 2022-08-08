@@ -126,12 +126,20 @@ function verifier(evt){
         document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi !";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
+        for(var j in ta_liste.list){
+            ta_liste.remove_class_item(j,"has-background-success-light");
+            ta_liste.add_class_item(j,"has-background-danger-light");
+        }
         
         //document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
     }else{
         document.getElementById("message").innerHTML = "J'écrirai la liste des nœuds cliqués ci-dessous.";
         document.getElementById("entete-message").classList.add("is-success");
         document.getElementById("entete-message").classList.remove("is-danger");
+        for(var j in ta_liste.list){
+            ta_liste.add_class_item(j,"has-background-success-light");
+            ta_liste.remove_class_item(j,"has-background-danger-light");
+        }
     }
 }
 </script>

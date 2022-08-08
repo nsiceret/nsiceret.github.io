@@ -306,7 +306,7 @@ class BinaryTree extends ADT{
 
         // draw edges first
         for(var i = 0; i < this.list.length; i++){
-            if(this.list[i]){
+            if(String(this.list[i])){
                 let x = this.coords[i][0];
                 let y = this.coords[i][1];
                 if(i > 0){
@@ -322,7 +322,7 @@ class BinaryTree extends ADT{
         }
         // draw nodes
         for(var i = 0; i < this.list.length; i++){
-            if(this.list[i]){
+            if(String(this.list[i])){
                 let x = this.coords[i][0];
                 let y = this.coords[i][1];
 
@@ -369,7 +369,7 @@ class BinaryTree extends ADT{
     }
 
     NLR(i){   //DFS : node, left, right
-        if(this.list[i]){
+        if(String(this.list[i])){
             this.NLR_list.push(this.list[i]);
             if(2*i+1 < this.list.length){
                 this.NLR(2*i+1);
@@ -380,7 +380,7 @@ class BinaryTree extends ADT{
         }
     }
     LNR(i){   //DFS : left, node, right
-        if(this.list[i]){
+        if(String(this.list[i])){
             if(2*i+1 < this.list.length){
                 this.LNR(2*i+1);
             }
@@ -391,7 +391,7 @@ class BinaryTree extends ADT{
         }
     }
     LRN(i){   //DFS : left, right, node
-        if(this.list[i]){
+        if(String(this.list[i])){
             if(2*i+1 < this.list.length){
                 this.LRN(2*i+1);
             }
@@ -400,6 +400,10 @@ class BinaryTree extends ADT{
             }
             this.LRN_list.push(this.list[i]);
         }
+    }
+
+    is_BST(i){
+
     }
 }
 
