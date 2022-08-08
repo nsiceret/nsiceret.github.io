@@ -264,6 +264,8 @@ class BinaryTree extends ADT{
         //coordinates of nodes
         this.calculate_coords();
         this.NLR_list = [];
+        this.LNR_list = [];
+        this.LRN_list = [];
     }
     calculate_coords(){
         // number of levels
@@ -375,6 +377,28 @@ class BinaryTree extends ADT{
             if(2*i+2 < this.list.length){
                 this.NLR(2*i+2);
             }
+        }
+    }
+    LNR(i){   //DFS : left, node, right
+        if(this.list[i]){
+            if(2*i+1 < this.list.length){
+                this.LNR(2*i+1);
+            }
+            this.LNR_list.push(this.list[i]);
+            if(2*i+2 < this.list.length){
+                this.LNR(2*i+2);
+            }
+        }
+    }
+    LRN(i){   //DFS : left, right, node
+        if(this.list[i]){
+            if(2*i+1 < this.list.length){
+                this.LRN(2*i+1);
+            }
+            if(2*i+2 < this.list.length){
+                this.LRN(2*i+2);
+            }
+            this.LRN_list.push(this.list[i]);
         }
     }
 }
