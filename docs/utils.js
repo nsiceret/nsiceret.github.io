@@ -254,7 +254,12 @@ class Stack extends ADT{
 class BinaryTree extends ADT{
     constructor(list=[],params={},item_params={}){
         super(list,params,item_params);
-        this.dist = 72;
+        this.levels = Math.floor(Math.log(this.list.length)/Math.log(2))+1;
+        this.params["h_dist"]  = this.params["h_dist"] ?  Number(this.params["h_dist"]) : 72;  // horizontal dist level 1
+        this.params["v_dist"]  = this.params["v_dist"] ?  Number(this.params["v_dist"]) : 72;  // vertical distance between 2 levels
+        this.params["width"] = this.params["width"] ?  Number(this.params["width"]) : 300;  
+        this.params["height"] = this.params["height"] ?  Number(this.params["height"]) : this.levels*this.params["h_dist"];
+        
         this.coords = [];
         //coordinates of nodes
         this.calculate_coords();
@@ -262,14 +267,13 @@ class BinaryTree extends ADT{
     }
     calculate_coords(){
         // number of levels
-        this.levels = Math.floor(Math.log(this.list.length)/Math.log(2))+1;
         
         // calculate coords
         var branch = 0;
         var total = 0;
         for(var level = 0; level < this.levels; level++){
-            var y = (level)*this.dist;
-            var sibling_dist = 2*this.dist/Math.pow(2,level-1);
+            var y = (level)*this.params["v_dist"];
+            var sibling_dist = 2*this.params["h_dist"]/Math.pow(2,level-1);
             var nodes = Math.pow(2,level); // number of nodes
     
             for(var branch = 0; branch < nodes; branch++){
@@ -281,9 +285,7 @@ class BinaryTree extends ADT{
         }
     }
 
-
     draw(where=""){
-        //super.draw(where,"svg");
         this.container = where ? where : this.container; // change only if 'where' is given
         this.container.innerHTML = "";
 
@@ -292,12 +294,13 @@ class BinaryTree extends ADT{
         this.container.appendChild(this.drawing);
         //this.drawing.setAttribute("xmlns","http://www.w3.org/2000/svg");
         //this.drawing.setAttribute("xmlns:xlink","http://www.w3.org/1999/xlink");
-        this.drawing.setAttribute("width","300");
-        this.drawing.setAttribute("height","210");
+        this.drawing.setAttribute("width",this.params["width"]);
+        this.drawing.setAttribute("height",this.params["height"]);
+        this.drawing.setAttribute("viewBox","0 0 "+this.params["width"]+" "+this.params["height"]);
 
         var arbre = document.createElementNS('http://www.w3.org/2000/svg',"g");
         this.drawing.appendChild(arbre);
-        arbre.setAttribute("transform","translate("+this.dist*2+" ,30)");
+        arbre.setAttribute("transform","translate("+this.params["h_dist"]*2+" ,30)");
 
         // draw edges first
         for(var i = 0; i < this.list.length; i++){

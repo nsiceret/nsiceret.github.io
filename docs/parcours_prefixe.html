@@ -6,18 +6,22 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 <script src="utils.js"></script>
 <style>
-    .node{
-        background-color:  hsl(204, 86%, 53%);
-    }
     text{
-        color: white;
-        fill: white;
+        color: hsl(217, 71%, 53%);
+        fill: hsl(217, 71%, 53%);
         font-size: 150%;
         text-anchor: "middle";
     }
     ellipse{
-        fill: hsl(141, 53%, 53%);
-
+        fill: hsl(0, 0%, 86%);
+        stroke: hsl(217, 71%, 53%);
+        stroke-width: 3;
+    }
+    .choisi{
+        stroke-width: 5;
+    }
+    .nonchoisi{
+        stroke-width: 3;
     }
     line{
         stroke-width: 3;
@@ -49,14 +53,14 @@
                     <p class="block" id="message" >
                         J'écrirai la liste des nœuds cliqués ci-dessous.
                     </p>
-                    <div id="liste" class="block content">
-                    </div>
+                    <p id="liste" class="block">
+                    </p>
                 </div>
             </article>
         </div>       
 </section>
 <script>
-liste_animaux = ["🦑","🪲","🐼","🦊","🦆","🐯",""];    //"🐼","🐸"];
+liste_animaux = ["🦑","🪲","🐼","🦊","🦆","🐯"];    //"🐼","🐸"];
 
 //liste_animaux = [1,2,3,4,,,7];
 
@@ -66,7 +70,7 @@ arbre.draw(document.querySelector("#arbre"));
 arbre.NLR(0);
 
 let prefixe = new List(arbre.NLR_list);
-let ta_liste = new List();
+let ta_liste = new List([],{},{"classes":["is-large","has-background-success-light"]});
 ta_liste.draw(document.querySelector("#liste"));
 let clics = [];
 
@@ -87,14 +91,22 @@ function selectionner(i){
     ta_liste.push(t);
     ta_liste.draw();
     clics.push(i);
-    arbre.get_ellipse(i).setAttribute("stroke","black");
-    arbre.get_ellipse(i).setAttribute("stroke-width","3");
+    //arbre.get_ellipse(i).setAttribute("stroke","black");
+    //arbre.get_ellipse(i).setAttribute("stroke-width","3");
+    let r = Number(arbre.get_ellipse(i).getAttribute("rx"))*0.8;
+    arbre.get_ellipse(i).setAttribute("rx",r);
+    arbre.get_ellipse(i).setAttribute("ry",r);
+    arbre.get_ellipse(i).classList.toggle("choisi");
     gerer_cliquable();
 }
 
 function deselectionner(i){
-    arbre.get_ellipse(i).setAttribute("stroke","none");
-    arbre.get_ellipse(i).setAttribute("stroke-width","0");
+    //arbre.get_ellipse(i).setAttribute("stroke","none");
+    //arbre.get_ellipse(i).setAttribute("stroke-width","0");
+    let r = Number(arbre.get_ellipse(i).getAttribute("rx"))/0.8;
+    arbre.get_ellipse(i).setAttribute("rx",r);
+    arbre.get_ellipse(i).setAttribute("ry",r);
+    arbre.get_ellipse(i).classList.toggle("choisi");
     ta_liste.pop();
     ta_liste.draw();
     clics.pop();
