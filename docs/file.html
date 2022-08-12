@@ -47,7 +47,7 @@
                               ou
                             </div>
                             <div class="field-body">
-                                <div class="button is-success" onclick="enlever();">défiler</div>
+                                <div class="button is-success" id="btn_defiler" onclick="enlever();">défiler</div>
                             </div> 
                         </div>
                     </div>
@@ -93,14 +93,45 @@ q.draw(document.querySelector("#objectif"));
 
 
 function verifier(){
+    var boutons = document.querySelector("#btn_enfiler").getElementsByClassName("button");
     if (q.is_equal_to(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle file.";
         document.getElementById("entete-message").classList.remove("is-success");
         document.getElementById("entete-message").classList.add("is-danger");
+        for(var j in q.list){
+            q.remove_class_item(j,"has-background-success-light");
+            q.add_class_item(j,"has-background-danger-light");
+        }
+        for(var j in p.list){
+            p.remove_class_item(j,"has-background-success-light");
+            p.add_class_item(j,"has-background-danger-light");
+        }
+        for(var j = 0 ; j < boutons.length ;j++){
+            boutons[j].classList.remove("has-background-success-light");
+            boutons[j].classList.add("has-background-danger-light");
+        }
+        document.querySelector("#btn_defiler").classList.remove("is-success");
+        document.querySelector("#btn_defiler").classList.add("is-danger");
+        
     }else{
         document.getElementById("message").innerHTML = "Sauriez-vous reconstituter la file ci-dessous ?";
         document.getElementById("entete-message").classList.add("is-success");
         document.getElementById("entete-message").classList.remove("is-danger");
+        for(var j in q.list){
+            q.add_class_item(j,"has-background-success-light");
+            q.remove_class_item(j,"has-background-danger-light");
+        }
+        for(var j in p.list){
+            p.add_class_item(j,"has-background-success-light");
+            p.remove_class_item(j,"has-background-danger-light");
+        }
+        
+        for(var j = 0 ; j < boutons.length ;j++){
+            boutons[j].classList.add("has-background-success-light");
+            boutons[j].classList.remove("has-background-danger-light");
+        }
+        document.querySelector("#btn_defiler").classList.add("is-success");
+        document.querySelector("#btn_defiler").classList.remove("is-danger");
     }
 }
 
