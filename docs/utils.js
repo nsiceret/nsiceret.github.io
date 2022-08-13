@@ -11,11 +11,11 @@ class Item{
         this.drawing = undefined;
         this.container = undefined;
     }
-    draw(where){
+    draw(where=""){
         this.tag = this.params["tag"] ? this.params["tag"] : "span";
         this.type = this.params["type"] ? this.params["type"] : "tag "
         this.size = this.params["size"] ? this.params["size"] : "is-large";
-        this.container = where;
+        this.container = where ? where : this.container;
         
         if(this.type == "stack"){
             this.drawing = this.container.drawing.insertRow(0);
@@ -117,7 +117,7 @@ class ADT{
             item.drawing.dataset.number = i;
         }
     }
-    
+
     is_empty(){
         return (this.list.length == 0);
     }
@@ -202,6 +202,18 @@ class ADT{
             it.firstChild.classList.add(c);
             it.firstChild.firstChild.classList.add(c);
         }
+    }
+
+    set_attribute_item(i,att,val){
+        console.log("set attr "+i+" "+att+" "+val);
+        var it = this.get_html_item(i);
+        it.setAttribute(att,val);
+    }
+
+    remove_attribute_item(i,att){
+        console.log("set attr "+i+" "+att);
+        var it = this.get_html_item(i);
+        it.removeAttribute(att);
     }
     
 }

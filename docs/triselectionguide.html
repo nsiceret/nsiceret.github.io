@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tri par sélection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="bulma.min.css"> <!--https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/-->
+<script src="utils.js"></script>
+</head>
+<body>
+<section class="section">
+<h1 class="title">Tri par sélection</h1>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>La situation</p>
+                </div>
+                <div class="message-body is-vcentered">
+                    <p class="block">
+                    Vous avez une liste, copiée ci-dessous.
+                    </p>
+                    <p class="content" id="initiale">
+                    </p>
+                    <p class="block">
+                    Vous devez trier ces nombres du plus petit au plus grand en utilisant le <strong>tri par sélection</strong>.
+                     </p>
+                     <p class="block">Le tri par sélection consiste à <strong>sélectionner</strong>
+                        le plus petit élément puis à le mettre à la première place. Ensuite, on place le deuxième plus petit élément à la deuxième place, puis le troisième à la troisième place, etc.
+                    </p>
+                </div>
+            </article>
+            <article class="message is-warning">
+                <div class="message-header"><p>Comment faire ?</p>
+                </div>
+                <div class="message-body is-vcentered">
+                    <p class="block"> 
+                    Cliquez sur une case, puis sur une deuxième, et cela inversera leurs places. 
+                    Il vous faut cliquer sur la liste qui se trouve ci-dessous, la première, en haut, est gardée pour mémoire. Si vous ne souhaitez faire de permutation, cliquez deux fois sur la même case.
+                    </p>
+                    <div class="content" id="tableau">
+                    </div>
+                    <p class="block" id="etapes">
+                    </p>
+                </div>
+            </article>
+            
+        </div>
+        <div class="column">
+            <article class="message is-success" id="entete-message">
+                <div class="message-header"><p id="message">J'écrirai ici vos essais</p>
+                </div>
+                <div class="message-body" id="essais">
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<script>
+
+liste = [9,7,4,8,5,3,1,2,6];
+
+dernier_clic = -1;
+
+var francais = ["première","deuxième","troisième","quatrième","cinquième", "sixième","septième","huitième","neuvième"];
+
+l = new List(liste,{},{"click":verifier,"classes":["has-background-warning-light"]});
+initiale = new List(liste,{},{"classes":["has-background-info-light"]});
+var tri = [1,2,3,4,5,6,7,8,9];
+permutations = 0;
+
+var etapes = 0
+
+function init(){
+    l.draw(document.querySelector("#tableau"));
+    initiale.draw(document.querySelector("#initiale"));
+    ajouter_etape();
+}
+
+init();
+
+function verif_tri(n){
+    for(var i = 0; i<=n; i++){
+        if(l.list[i] != tri[i]){
+            console.log("--"+i);
+            return false;
+        }
+    }
+    return true;
+}
+
+function gerer_message(){
+    let correct = verif_tri(etapes); 
+    if(correct){
+        console.log(etapes);
+        etapes++;
+        if(etapes < tri.length){
+            if(etapes == tri.length -1){
+                alert("Le dernier nombre à trier est forcément le plus grand : c'est fini !")
+            }else{
+                alert("Bien ! Passons à l'étape suivante.");
+                ajouter_etape();
+            }
+            
+        }
+    }else{
+        alert("Non. Respectez bien la consigne.")
+    }
+
+    // recolorier les premiers triés
+    for(let j = 0; j < etapes; j++){
+        l.add_class_item(j,"has-background-success");
+        l.remove_class_item(j,"is-clickable");
+        l.remove_class_item(j,"has-background-warning-light");
+        l.get_html_item(j).removeEventListener("click",l.get_item(j).params["click"]);
+        //addEventListener("click",params["click"]);
+    }
+}
+
+function ajouter_essai(i,j) {
+    let correct = verif_tri(etapes);
+    let msg = document.createElement("div");
+    msg.className = "block";
+    let essai = correct ? "" : "<s>";
+    essai+= "Permuter cellules d'index "+j+" et "+i;
+    let fin = correct ? "." : "</s> <small>(erreur dans l'application de l'algorithme)</small>."
+    msg.innerHTML = essai+fin;
+    document.querySelector("#essais").appendChild(msg);}
+
+function ajouter_etape() {
+    let paragraphe = document.createElement("p");
+    paragraphe.classList.add("block");
+    paragraphe.innerHTML = "<strong>Étape n° "+(etapes+1)+"</strong>";
+    var num = etapes ? francais[etapes] : ""; 
+    paragraphe.innerHTML += " En inversant deux cases, placez le "+num;
+    paragraphe.innerHTML += " plus petit nombre à la "+francais[etapes]+" place.";
+    document.querySelector("#etapes").appendChild(paragraphe);
+}
+
+function verifier(elt){
+    var i = elt.target.dataset.number;
+    if(dernier_clic == -1){
+        elt.target.classList.remove("has-background-warning-light");
+        elt.target.classList.add("has-background-warning");
+        dernier_clic = i;
+    }else if(dernier_clic == i){
+        dernier_clic = -1;
+        elt.target.classList.add("has-background-warning-light");
+        elt.target.classList.remove("has-background-warning");
+        gerer_message();        
+    }else{
+        l.get_item(dernier_clic).drawing.classList.remove("has-background-warning");
+        if(dernier_clic == etapes || i == etapes){
+            l.swap(dernier_clic,i);
+            permutations++;
+        }
+        l.draw();
+        ajouter_essai(dernier_clic,i);
+        dernier_clic = -1;
+        gerer_message();
+    }
+}
+</script>
+</body>
+</html>
