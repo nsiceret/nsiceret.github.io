@@ -122,19 +122,22 @@ function verifier(elt){
     essai.appendChild(texte);
     document.querySelector("#essais").appendChild(essai);
     if (liste_triee(p.list.slice().map(x => x.length).reverse())){
-        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+essais+" essais en retournant "+retournements+" matelas !";
-        document.getElementById("entete-message").classList.remove("is-success");
-        document.getElementById("entete-message").classList.add("is-danger");
-        
-        document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
-        document.querySelector("#lit").innerHTML =`<a title="Henry Justice Ford
-, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:The_Yellow_Fairy_Book_(1894)_-_p.255.png"><img width="512" alt="The Yellow Fairy Book (1894) - p.255" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/The_Yellow_Fairy_Book_%281894%29_-_p.255.png/512px-The_Yellow_Fairy_Book_%281894%29_-_p.255.png"></a>`;
+        elt.target.parentNode.parentNode.addEventListener("transitionend",fin);
     }else{
         document.getElementById("message").innerHTML = "À vous de jouer";
         document.getElementById("entete-message").classList.add("is-success");
         document.getElementById("entete-message").classList.remove("is-danger");
     }
     
+}
+function fin(){
+    document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+essais+" essais en retournant "+retournements+" matelas !";
+    document.getElementById("entete-message").classList.remove("is-success");
+    document.getElementById("entete-message").classList.add("is-danger");
+        
+    document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
+    document.querySelector("#lit").innerHTML =`<a title="Henry Justice Ford
+, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:The_Yellow_Fairy_Book_(1894)_-_p.255.png"><img width="256" alt="The Yellow Fairy Book (1894) - p.255" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/The_Yellow_Fairy_Book_%281894%29_-_p.255.png/256px-The_Yellow_Fairy_Book_%281894%29_-_p.255.png"></a>`;
 }
 </script>
 </body>
