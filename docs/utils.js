@@ -20,7 +20,6 @@ class Item{
         if(this.type == "stack"){
             this.drawing = this.container.drawing.insertRow(0);
             this.drawing.className="has-text-centered";
-            
             var newCell = this.drawing.insertCell();
             
             var txt = document.createTextNode(this.display);
@@ -44,7 +43,6 @@ class Item{
             }else{
                 content.classList.remove("is-clickable");
             }
-            
                   
         }else{
             this.drawing = document.createElement(this.tag);
@@ -78,7 +76,9 @@ class Item{
         
         this.drawing.dataset.value = this.value;
         this.container.items.push(this);
-
+        //keep track of translations
+        this.drawing.dataset.x = 0;
+        this.drawing.dataset.y = 0 ;
     }
 }
 
@@ -180,6 +180,7 @@ class ADT{
     }
 
     get_html_item(i){
+        //il faut se baser sur dataset.number en cas d'animation
         var r = '[data-number="'+i+'"]';
         return this.drawing.querySelector(r);
     }
@@ -195,6 +196,7 @@ class ADT{
     }
 
     add_class_item(i,c){
+        console.log("class"+i+" "+c);
         var it = this.get_html_item(i);
         it.classList.add(c);
         console.log("add class : "+it.tagName);
@@ -227,10 +229,43 @@ class List extends ADT{
         this.drawing.className = "content";
     }
 
-    swap(i,j){
+    swap(i,j,params={}){
         var a = this.list[i];
         this.list[i] = this.list[j];
         this.list[j] = a;
+
+        //animation
+        const childA = this.get_html_item(i);
+        const childB = this.get_html_item(j);
+        const dx = childA.getBoundingClientRect().left - childB.getBoundingClientRect().left;
+        const dxm = -dx;
+        const copyA = childA.cloneNode(true);
+        if(this.get_item(i).params["click"]){
+            copyA.addEventListener("click",this.get_item(i).params["click"]);
+        }
+        copyA.dataset.number = j;
+
+        const copyB = childB.cloneNode(true);
+        if(this.get_item(j).params["click"]){
+            copyB.addEventListener("click",this.get_item(j).params["click"]);
+        }
+        copyB.dataset.number = i;
+
+        childA.style.transition = "transform 1s";
+        childA.style.transform = `translateX(${dxm}px)`;
+        childA.addEventListener("transitionend",
+            ()=>{
+                this.drawing.replaceChild(copyB,childA);
+                }
+        );
+
+        childB.style.transition = "transform 1s";
+        childB.style.transform = `translateX(${dx}px)`;
+        childB.addEventListener("transitionend",
+            ()=>{
+                this.drawing.replaceChild(copyA,childB);
+                }
+        );
     }
 }
 
@@ -245,9 +280,11 @@ class Stack extends ADT{
         super.draw(where,"table");
     }
 
-    reverse(n){
+    reverse(n,params={"draw":true}){
+        const draw = params["draw"] ? true : false;
+        console.log(draw);
         var s = new Stack();
-        for(var i=0; i<= n; ++i){
+        for(var i=0; i< n; ++i){
             var e = this.pop();
             s.push(e);
         }
@@ -259,6 +296,42 @@ class Stack extends ADT{
         while(!t.is_empty()){
             var e = t.pop();
             this.push(e);
+        }
+
+        // animation
+        
+        if(draw){
+            let dys = [];
+            let dy;
+            let child;
+            let j;
+            let k;
+            let copy;
+
+            for(var i=0; i < n; i++){
+                j = this.list.length - i - 1 ;
+                k = this.list.length - n + i;
+                var childA= this.get_html_item(j);
+                var childB = this.get_html_item(k);
+                dy = childB.getBoundingClientRect().top - childA.getBoundingClientRect().top;
+                dy = dy + Number(childA.dataset.y);  // on prend en compte les anciennes translations
+                dys.push(dy);
+            }
+
+            for(var i=0; i < n ; i++){
+                j = this.list.length - i - 1 ;
+                k = this.list.length - n + i;
+                child = this.get_html_item(j);
+                child.style.transition = "transform 1s";
+                child.style.transform ="translateY("+dys[i]+"px)";
+                child.dataset.y = dys[i];
+                child.dataset.k = k;
+                child.addEventListener("transitionend",endTransition);
+            }
+            function endTransition(e) {
+                e.target.dataset.number = e.target.dataset.k;
+            }
+            
         }
     }
 }

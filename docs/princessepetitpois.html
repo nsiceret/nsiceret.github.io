@@ -111,10 +111,10 @@ function init(){
 
 
 function verifier(elt){
-    const n = elt.target.parentNode.parentNode.rowIndex;    // le clic se passe sur le texte !!
+    const n = liste_matelas.length - Number(elt.target.parentNode.parentNode.dataset.number);    // le clic se passe sur le texte !! n est le nombre de matelas à retourner
     p.reverse(n);
-    couleurs.reverse(n);
-    dessiner();
+    couleurs.reverse(n,{"draw":false});
+    //dessiner();
     essais ++;
     retournements += n+1;
     var essai = document.createElement("div");

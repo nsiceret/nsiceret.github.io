@@ -79,9 +79,10 @@ function verifier(elt){
         elt.target.classList.add("has-background-warning-light");
         elt.target.classList.remove("has-background-warning");        
     }else{
-        l.get_item(dernier_clic).drawing.classList.remove("has-background-warning");
+        l.remove_class_item(dernier_clic,"has-background-warning");
+        l.add_class_item(dernier_clic,"has-background-warning-light");
         l.swap(dernier_clic,i);
-        l.draw();
+        //l.draw();
         permutations++;
         
         var msg = document.createElement("div");

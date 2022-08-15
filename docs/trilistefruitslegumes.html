@@ -102,17 +102,16 @@ btn_paspermuter.innerHTML = "Non";
 function vider_selection(){
     const n = selection.length;
     for(i=0;i < n; ++i){
-        l.remove_class_item(selection[0],"is-success");
+        l.remove_class_item(selection[0],"has-background-warning");
+        l.add_class_item(selection[0],"has-background-warning-light");        
         selection.shift();
     }
-    console.log("sélection vidée "+selection);
     afficher_balance();
 }
 
 function permuter(){
     const a = selection[0];
     const b = selection[1];
-    console.log("permuter "+a+" "+b+" = "+(a+b));
     permutations++ ;
     
     
@@ -120,16 +119,19 @@ function permuter(){
     msg.className = "block";
     msg.innerHTML = "Permuter cellules d'index "+a+" et "+b;
     document.querySelector("#essais").appendChild(msg);
-    
+    //enlever la couleur
+    l.remove_class_item(a,"has-background-warning");
+    l.add_class_item(a,"has-background-warning-light");
+    l.remove_class_item(b,"has-background-warning");
+    l.add_class_item(b,"has-background-warning-light");
     l.swap(a,b);
-    l.draw();
     vider_selection();
     afficher_balance()
     verifier_resultat();
 }
 
 function paspermuter(){
-    l.draw();
+    //l.draw();
     vider_selection();
     afficher_balance()
 }
@@ -186,7 +188,7 @@ function afficher_balance(){
         
         var t = ligne1.insertCell();
         t.colSpan="2";
-        t.className = "has-text-centered is-warningg";
+        t.className = "has-text-centered";
         t.innerHTML="Permuter ?";
         
         c = ligne2.insertCell();
@@ -200,10 +202,8 @@ function afficher_balance(){
     
 }
 function verifier(elt){
-    console.log("vérifier "+selection+" "+elt.target.innerHTML);
     var i = elt.target.dataset.number;
     if(selection.includes(i)){
-        console.log(i+"est dedans");
         elt.target.classList.remove("has-background-warning");
         elt.target.classList.add("has-background-warning-light");
         if(i == selection[0]){
@@ -213,7 +213,6 @@ function verifier(elt){
         }
     }else{
         clics++;
-        console.log(i+"n'est pas dedans");
         elt.target.classList.add("has-background-warning");
         elt.target.classList.remove("has-background-warning-light");
         if(selection.length == 2){
@@ -224,8 +223,6 @@ function verifier(elt){
         selection.push(i);
     }   
     afficher_balance();
-    
-    console.log("vérification faite :"+selection);
     document.querySelector("#clics").innerHTML = clics+" déplacements de sacs vers la balance";
     verifier_resultat();
 }
