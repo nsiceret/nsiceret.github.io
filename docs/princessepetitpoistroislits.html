@@ -76,13 +76,12 @@ var l3 = new Stack([],{},{"tag":"tag"});
 
 const test = new Stack(liste_matelas);
 
+var depart;
+var arrivee;
+
 l1.draw(document.querySelector("#lit1"));
 l2.draw(document.querySelector("#lit2"));
 l3.draw(document.querySelector("#lit3"));
-
-dessiner(1);
-dessiner(2);
-dessiner(3);
 
 var deplacements = 0;
 var choisi = 0;
@@ -94,7 +93,7 @@ function dessiner(i){
     // ajout de cases vides pour alignement vertical
     let len = lit.list.length;
     for(j=0 ; j < liste_matelas.length-len; j++){
-        lit.push("");
+        lit.push("x");
     }
     lit.draw(document.querySelector("#lit"+i));
     // couleurs
@@ -107,14 +106,26 @@ function dessiner(i){
 function colorier(lit){
     // couleurs
     for(var i in lit.list){
-        if(lit.list[i]){
+        if(lit.list[i] != "x"){
             lit.add_class_item(i,couleurs[lit.list[i]]);
         }else{
             lit.add_class_item(i,"is-normal");
+            lit.get_html_item(i).firstChild.firstChild.classList.add("is-invisible");
         }
     }
 }
 
+function premier_non_vide(lit){
+    return lit.drawing.firstChild.children[liste_matelas.length-lit.list.length];
+}
+function dernier_vide(lit){
+    if(premier_non_vide(lit)){
+        return premier_non_vide(lit).previousSibling;
+    }else{
+        return lit.drawing.firstChild.lastChild;
+    }
+    
+}
 function init(){
     l1.empty();
     l1 = new Stack(
@@ -124,7 +135,9 @@ function init(){
              "tag":"tag"
             }
             );
-   dessiner();
+    dessiner(1);
+    dessiner(2);
+    dessiner(3);
 }
 
 function verifier(e){
@@ -145,11 +158,6 @@ function verifier(e){
             choisi = 0;
         }
     }
-}
-
-function dessus(pile){
-    //on suppose non vide
-    return pile.list[pile.list.length-1];
 }
 
 function est_vide(pile) {
@@ -176,7 +184,7 @@ function peut_on_deplacer(de,a){
         return false;
     }
     else{
-        let rep = (dessus(pile1).length < dessus(pile2).length);
+        let rep = (pile1.list[pile1.list.length-1].length < pile2.list[pile2.list.length-1].length);
         if(!rep){
             alert("Impossible ! Le matelas supérieur du lit n°"+de+" est plus grand que celui du lit n°"+a);
         }
@@ -199,14 +207,31 @@ function deplacer(de,a){
         deplacements++;
         let pile1 = choixlit(de);
         let pile2 =  choixlit(a);
+        // animation
+        let depart = premier_non_vide(pile1);
+        let arrivee = dernier_vide(pile2);
+
+        let xmilieudepart = (Number(depart.getBoundingClientRect().left)+Number(depart.getBoundingClientRect().right))/2;
+        let xmilieuarrivee = (Number(arrivee.getBoundingClientRect().left)+Number(arrivee.getBoundingClientRect().right))/2;
+        let ymilieudepart = (Number(depart.getBoundingClientRect().top)+Number(depart.getBoundingClientRect().bottom))/2;
+        let ymilieuarrivee = (Number(arrivee.getBoundingClientRect().top)+Number(arrivee.getBoundingClientRect().bottom))/2;
+        let dx = xmilieuarrivee-xmilieudepart;
+        let dy = ymilieuarrivee-ymilieudepart;
+        depart.style.transition = "transform 0.5s";
+        depart.style.transform = `translateX(${dx}px) translateY(${dy}px)`;
+        depart.addEventListener("transitionend",
+            ()=>{
+                dessiner(de);
+                dessiner(a);
+                if (l3.is_equal_to(test)){
+                    //elt.target.parentNode.parentNode.addEventListener("transitionend",fin);
+                    fin();
+                }
+            }
+        );
         let r = pile1.pop();
         pile2.push(r);
-        dessiner(de);
-        dessiner(a);
-        if (l3.is_equal_to(test)){
-            //elt.target.parentNode.parentNode.addEventListener("transitionend",fin);
-            fin();
-        }
+        
     }
 }
 function fin(){
