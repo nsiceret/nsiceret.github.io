@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Les trois lits de la princesse au petit pois</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="utils.js"></script>
+</head>
+<body>
+<section class="section">
+<h1 class="title">Les trois lits de la princesse au petit pois</h1>
+<article class="message is-info">
+<div class="message-header"><p>La situation</p></div>
+<div class="message-body">
+    <p class="block">
+        La princesse est habituée au grand luxe,
+        elle ne peut dormir que sur un énorme
+        tas de matelas. Afin de garder l'équilibre, il faut que les matelas
+        soient empilés dans l'ordre, du plus grand en bas jusqu'au plus petit
+        tout en haut.
+    </p>
+    <p class="block">
+        C'est le moment du nettoyage, il faut transporter les matelas du lit n°1 au lit n°3. Vous ne pouvez déplacer qu'un matelas à la fois, d'un lit à l'autre
+        et, sur chaque lit, les matelas doivent être dans l'ordre : aucun matelas ne peut être posé sur
+        un matelas plus petit.
+    </p>
+    </div>
+</article>               
+<article class="message is-success" id="entete-message">
+    <div class="message-header">
+        <p id="message">Sauriez-vous reconstituter aider la princesse ?</p>
+    </div>
+    <div class="message-body" >
+        <p class="block" id="consigne">Pour déplacer le matelas de dessus d'un lit à l'autre, cliquez sur le bouton situé au-dessus du lit de départ puis sur celui au-dessus du lit d'arrivée.
+        </p>
+        <div id="lit"></div>
+        <div class="columns" id="colonnes">
+            <div class="column">
+                <div class="button" id="btn1" onclick="verifier(1);">Lit n°1</div>
+                <div class="content" id="lit1"></div>
+            </div>
+            <div class="column">
+                <div class="button" id="btn2" onclick="verifier(2);">Lit n°2</div>
+                <div class="content" id="lit2"></div>
+            </div>
+            <div class="column">
+                <div class="button" id="btn3" onclick="verifier(3);">Lit n°3</div>
+                <div class="content" id="lit3"></div>
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+<script>
+
+const liste_matelas = [
+"Le plus grand de tous les matelas de la princesse",
+"Le deuxième plus grand des matelas",
+"Un très très grand matelas",
+"Un très grand matelas",
+"Un grand matelas"
+];
+
+
+const couleurs = {
+"Le plus grand de tous les matelas de la princesse":"is-link",
+"Le deuxième plus grand des matelas":"is-success",
+"Un très très grand matelas": "is-danger",
+"Un très grand matelas":"is-warning",
+"Un grand matelas":"is-dark"
+}
+
+var l1 = new Stack(liste_matelas,{},{"tag":"tag"});
+var l2 = new Stack([],{},{"tag":"tag"});
+var l3 = new Stack([],{},{"tag":"tag"});
+
+const test = new Stack(liste_matelas);
+
+l1.draw(document.querySelector("#lit1"));
+l2.draw(document.querySelector("#lit2"));
+l3.draw(document.querySelector("#lit3"));
+
+dessiner(1);
+dessiner(2);
+dessiner(3);
+
+var deplacements = 0;
+var choisi = 0;
+
+init();
+
+function dessiner(i){
+    lit = choixlit(i);
+    // ajout de cases vides pour alignement vertical
+    let len = lit.list.length;
+    for(j=0 ; j < liste_matelas.length-len; j++){
+        lit.push("");
+    }
+    lit.draw(document.querySelector("#lit"+i));
+    // couleurs
+    colorier(lit);
+    for(j=0 ; j < liste_matelas.length-len; j++){
+        lit.pop();
+    }
+}
+
+function colorier(lit){
+    // couleurs
+    for(var i in lit.list){
+        if(lit.list[i]){
+            lit.add_class_item(i,couleurs[lit.list[i]]);
+        }else{
+            lit.add_class_item(i,"is-normal");
+        }
+    }
+}
+
+function init(){
+    l1.empty();
+    l1 = new Stack(
+            liste_matelas,
+            {},
+            {"classes":["is-normal","is-relative","mx-auto"],
+             "tag":"tag"
+            }
+            );
+   dessiner();
+}
+
+function verifier(e){
+    if(choisi == 0){
+        choisi = e;
+        document.querySelector("#btn"+e).classList.add("is-focused");
+    }
+    else{
+        if(choisi == e){
+            choisi = 0;
+            document.querySelector("#btn"+e).classList.remove("is-focused");
+            console.log("annulé");
+        }else{
+            console.log("déplacé de "+choisi+" à "+e);
+            document.querySelector("#btn"+choisi).classList.remove("is-focused");
+            document.querySelector("#btn"+e).classList.remove("is-focused");
+            deplacer(choisi,e);
+            choisi = 0;
+        }
+    }
+}
+
+function dessus(pile){
+    //on suppose non vide
+    return pile.list[pile.list.length-1];
+}
+
+function est_vide(pile) {
+    if(pile.is_empty()){
+        return true
+    }else{
+        var e = pile.pop();
+        if(e){
+            return false;
+        }else{
+            return est_vide(pile);
+        }
+    }
+}
+
+function peut_on_deplacer(de,a){
+    let pile1 = choixlit(de);
+    let pile2 = choixlit(a);
+    if(pile2.is_empty()){
+        return true;
+    }
+    else if(pile1.is_empty()){
+        alert("On ne peut pas prendre de matelas du lit n°"+de+" ! Il est vide.");
+        return false;
+    }
+    else{
+        let rep = (dessus(pile1).length < dessus(pile2).length);
+        if(!rep){
+            alert("Impossible ! Le matelas supérieur du lit n°"+de+" est plus grand que celui du lit n°"+a);
+        }
+        return rep
+    }
+}
+
+function choixlit(n){
+    if(n==1){
+        return l1;
+    }else if(n==2){
+        return l2;
+    }else{
+        return l3;
+    }
+}
+
+function deplacer(de,a){
+    if(peut_on_deplacer(de,a)){
+        deplacements++;
+        let pile1 = choixlit(de);
+        let pile2 =  choixlit(a);
+        let r = pile1.pop();
+        pile2.push(r);
+        dessiner(de);
+        dessiner(a);
+        if (l3.is_equal_to(test)){
+            //elt.target.parentNode.parentNode.addEventListener("transitionend",fin);
+            fin();
+        }
+    }
+}
+function fin(){
+    document.getElementById("consigne").innerHTML = "BRAVO ! Vous avez réussi en déplaçant "+deplacements+" matelas !";
+    document.getElementById("entete-message").classList.remove("is-success");
+    document.getElementById("entete-message").classList.add("is-danger");
+        
+    document.querySelector("#message").innerHTML = "Rechargez la page si vous voulez recommencer.";
+    if(deplacements == Math.pow(2,liste_matelas.length)-1){
+        document.querySelector("#consigne").innerHTML += " <strong>On ne peut pas faire mieux !</strong>";
+    }else{
+        document.querySelector("#consigne").innerHTML += " <small>Vous pouvez réussir avec moins de déplacements.</small>"
+    }
+    document.querySelector("#colonnes").innerHTML = "";
+    document.querySelector("#lit").innerHTML =`<a title="Edmund Dulac, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Edmund_Dulac%27s_picture-book_for_the_French_Red_Cross_-_color_plate_11.jpg"><img width="512" alt="Edmund Dulac&#039;s picture-book for the French Red Cross - color plate 11" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Edmund_Dulac%27s_picture-book_for_the_French_Red_Cross_-_color_plate_11.jpg/512px-Edmund_Dulac%27s_picture-book_for_the_French_Red_Cross_-_color_plate_11.jpg"></a>`;
+}
+</script>
+</body>
+</html>

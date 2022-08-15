@@ -87,7 +87,7 @@ class ADT{
       this.params = params;
       this.item_params = item_params;
       this.container = undefined;
-      this.list = list;         // list of values 
+      this.list = list.slice();         // list of values 
       this.items = [];          // list of items
     }
     
