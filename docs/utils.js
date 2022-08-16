@@ -239,6 +239,10 @@ class List extends ADT{
         const childB = this.get_html_item(j);
         const dx = childA.getBoundingClientRect().left - childB.getBoundingClientRect().left;
         const dxm = -dx;
+
+        const dy = childA.getBoundingClientRect().top - childB.getBoundingClientRect().top;
+        const dym = -dy;
+        
         const copyA = childA.cloneNode(true);
         if(this.get_item(i).params["click"]){
             copyA.addEventListener("click",this.get_item(i).params["click"]);
@@ -252,7 +256,7 @@ class List extends ADT{
         copyB.dataset.number = i;
 
         childA.style.transition = "transform 1s";
-        childA.style.transform = `translateX(${dxm}px)`;
+        childA.style.transform = `translateX(${dxm}px) translateY(${dym}px)`;
         childA.addEventListener("transitionend",
             ()=>{
                 this.drawing.replaceChild(copyB,childA);
@@ -260,7 +264,7 @@ class List extends ADT{
         );
 
         childB.style.transition = "transform 1s";
-        childB.style.transform = `translateX(${dx}px)`;
+        childB.style.transform = `translateX(${dx}px) translateY(${dy}px)`;
         childB.addEventListener("transitionend",
             ()=>{
                 this.drawing.replaceChild(copyA,childB);
