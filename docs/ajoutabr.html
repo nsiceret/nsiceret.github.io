@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ajout dans un ABR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="utils.js"></script>
+<style>
+    text{
+        color: hsl(217, 71%, 53%);
+        fill: hsl(217, 71%, 53%);
+        font-size: 100%;
+        text-anchor: "middle";
+    }
+    ellipse{
+        fill: hsl(0, 0%, 86%);
+        stroke: hsl(217, 71%, 53%);
+        stroke-width: 3;
+    }
+    .vide{
+        fill: hsl(48, 100%, 96%) ;
+    }
+    .montrer_ellipse{
+        stroke-width: 5;
+        fill: hsl(347, 90%, 96%);
+        stroke: hsl(348, 100%, 61%);
+    }
+    .montrer_texte{
+        fill: hsl(348, 100%, 61%);
+        color: hsl(348, 100%, 61%);
+    }
+    line{
+        stroke-width: 3;
+        fill: none;
+        stroke: hsl(217, 71%, 53%);
+    }
+</style>
+</head>
+<body>
+<section class="section">
+    <h1 class="title">Cachez le trésor</h1>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>La situation</p></div>
+                <div class="message-body">
+                    <p class="block">
+                        À chaque fois qu'ils dévalisent quelqu'un, les 40 voleurs cachent leur butin dans leur grotte, dont un schéma est donné ci-après. La grotte est composée de salles reliées par des couloirs. Les voleurs déposent un seul butin par salle.
+                    </p>
+                    <p class="block content">
+                        La grotte est organisée ainsi, en parcourant le schéma de haut en bas :
+                    </p>
+                        <ul class="content">
+                            <li>si, depuis une salle, on part vers la gauche, on est sûr que toutes les salles suivantes auront moins de pièces d'or que la salle de départ ;</li>
+                             <li>si, depuis une salle, on part vers la droite, on est sûr que toutes les salles suivantes auront plus de pièces d'or que la salle de départ.</li>
+                        </ul>
+                    <p class="block">
+                        Par exemple, pour aller de l'entrée aux salles avec 8, 10 ou 13 pièces d'or, il faut prendre le couloir de gauche. On peut vérifier que 8, 10 et 13 sont plus petits que 15.
+                    </p>
+                </div>
+            </article>
+        </div>
+        <div class="column">
+            <article class="message is-success" id="entete-message">
+                <div class="message-header"><p>La grotte</p></div>
+                <div class="message-body">
+                    <p class="block" id="message">Les 40 voleurs reviennent d'une razzia où ils ont dérobé <span id="nb"></span> pièces d'or. Dans quelle salle doivent-ils placer leur nouveau butin pour respecter leur organisation&nbsp;? Cliquez sur une des salles marquée par un point d'iterrogation.
+                    </p>
+                    <div id="arbre" class="block content">
+                    </div>
+                </div>
+            </article>
+        </div>       
+</section>
+<script>
+liste_abr = [15,10,20,8,13,"?","?","?","?","?","?"];
+
+let nb = 15;
+
+while(liste_abr.includes(nb)){
+    nb = Math.floor(Math.random()*20)+5;
+}
+
+document.querySelector("#nb").innerHTML = nb;
+
+let arbre = new BinaryTree(liste_abr,
+                {"h_dist":100,
+                "width":400,
+                "height":300,
+                "x_radius":15,
+                "y_radius":15
+                });
+
+arbre.draw(document.querySelector("#arbre"));
+
+init();
+
+function init(){
+    for(var i in liste_abr){
+        if(arbre.get_text(i).innerHTML=="?"){
+            var ell = arbre.get_ellipse(i);
+            ell.classList.add("vide");
+            arbre.get_node(i).classList.add("is-clickable");
+            arbre.get_node(i).addEventListener("click",verifier);
+        }
+    }
+}
+
+function inserer(elt,i){
+    if(arbre.list[i]=="?"){
+        arbre.list[i] = elt;
+        return i;
+    }else if(arbre.list[i] < elt){
+        return inserer(elt,2*i+2);
+    }else{
+        return inserer(elt,2*i+1);
+    }
+
+}
+
+function verifier(evt){
+    let i = Number(evt.target.parentNode.dataset.index);
+    console.log(i);
+    let j = inserer(nb,0);
+    arbre.list[i] = "⚠";
+    arbre.list[j] = nb;
+    arbre.draw();
+
+    document.querySelector("#entete-message").classList.remove("is-sucess");
+    document.querySelector("#entete-message").classList.add("is-danger");
+
+    arbre.get_ellipse(j).classList.add("montrer_ellipse");
+    arbre.get_ellipse(i).classList.add("montrer_ellipse");
+
+    arbre.get_text(j).classList.add("montrer_texte");
+    arbre.get_text(i).classList.add("montrer_texte");
+    
+    if(i == j){
+        document.querySelector("#message").innerHTML = "BRAVO !";
+        arbre.draw();
+    }else{
+        document.querySelector("#message").innerHTML = "Erreur !";
+        
+    }
+    document.querySelector("#message").innerHTML += " Vous pouvez recommencer avec un nombre aléatoire en rechargeant la page.";
+}
+</script>
+</body>
+</html>
