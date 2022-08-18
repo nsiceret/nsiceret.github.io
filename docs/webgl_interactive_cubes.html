@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - interactive cubes</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			body {
+				background-color: #f0f0f0;
+				color: #444;
+			}
+			a {
+				color: #08f;
+			}
+		</style>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js" integrity="sha512-0tlhMhMGPohLm/YwaskxH7jJuUGqU/XPTl+HE0dWrhGbpEBRIZYMQdbHC0CmyNPzZKTBd8JoVZnvMcL7hzlFOg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	</head>
+	<body style="background-color: #CCCCCC">
+
+		<div id="container"  width="200" height="100" ></div>
+
+		<script>
+
+			let container;
+			let camera, scene, raycaster, renderer;
+
+			let INTERSECTED;
+			let theta = 0;
+
+			const pointer = new THREE.Vector2();
+			const radius = 100;
+
+			const n = 17;
+
+			//const rect = container.getBoundingClientRect();
+			const w = 600;//(rect.right - rect.left);
+			const h = w/2;//w/2;
+
+
+			init();
+			render();//animate();
+
+			/*
+			const geometry = new THREE.SphereGeometry( 15, 32, 16 );
+				const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+				const sphere = new THREE.Mesh( geometry, material );
+				scene.add( sphere );
+			*/
+
+			function init() {
+
+				//container = document.createElement( 'div' );
+				//document.body.appendChild( container );
+
+				container = document.querySelector("#container");
+
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xf0f0f0 );
+
+				const light = new THREE.DirectionalLight( 0xffffff, 1 );
+				light.position.set( 1, 1, 1 ).normalize();
+				scene.add( light );
+
+				const geometry = new THREE.SphereGeometry( 15, 32, 16 );//new THREE.BoxGeometry( 20, 20, 20 );
+
+				for ( let i = 0; i < n; i ++ ) {
+
+					const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color:  0xffffff } ) );
+
+					object.position.x = Math.random() * w - (w/2);
+					object.position.y = Math.random() * h - (h/2);
+					object.position.z = -100;//Math.random() * 200 - 200;
+
+					object.rotation.x = Math.random() * 2 * Math.PI;
+					object.rotation.y = Math.random() * 2 * Math.PI;
+					object.rotation.z = Math.random() * 2 * Math.PI;
+
+					//object.scale.x = Math.random() + 0.5;
+					//object.scale.y = Math.random() + 0.5;
+					//object.scale.z = Math.random() + 0.5;
+
+					scene.add( object );
+
+				}
+
+				raycaster = new THREE.Raycaster();
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				//renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize(w,h);
+				container.appendChild( renderer.domElement );
+
+				//stats = new THREE.Stats();
+				//container.appendChild( stats.dom );
+
+				document.addEventListener( 'mousemove', onPointerMove );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function onPointerMove( event ) {
+
+				pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+			}
+
+			//
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				render();
+				//stats.update();
+
+			}
+
+			function render() {
+
+				//theta += 0.1;
+				var thetarad = theta*Math.PI/180;
+				camera.position.x = radius * Math.sin( ( thetarad ) );
+				camera.position.y = radius * Math.sin( ( thetarad ) );
+				camera.position.z = radius * Math.cos( ( thetarad ) );
+				camera.lookAt( scene.position );
+
+				camera.updateMatrixWorld();
+
+				// find intersections
+
+				raycaster.setFromCamera( pointer, camera );
+
+				const intersects = raycaster.intersectObjects( scene.children, false );
+
+				if ( intersects.length > 0 ) {
+
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+
+						if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+						INTERSECTED = intersects[ 0 ].object;
+						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+						INTERSECTED.material.emissive.setHex( 0xff0000 );
+
+					}
+
+				} else {
+
+					if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+					INTERSECTED = null;
+
+				}
+
+				renderer.render( scene, camera );
+
+			}
+
+
+		</script>
+
+	</body>
+</html>

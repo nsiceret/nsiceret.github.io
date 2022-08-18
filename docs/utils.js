@@ -242,7 +242,7 @@ class List extends ADT{
 
         const dy = childA.getBoundingClientRect().top - childB.getBoundingClientRect().top;
         const dym = -dy;
-        
+
         const copyA = childA.cloneNode(true);
         if(this.get_item(i).params["click"]){
             copyA.addEventListener("click",this.get_item(i).params["click"]);
@@ -255,7 +255,7 @@ class List extends ADT{
         }
         copyB.dataset.number = i;
 
-        childA.style.transition = "transform 1s";
+        childA.style.transition = "transform 0.3s";
         childA.style.transform = `translateX(${dxm}px) translateY(${dym}px)`;
         childA.addEventListener("transitionend",
             ()=>{
@@ -263,7 +263,7 @@ class List extends ADT{
                 }
         );
 
-        childB.style.transition = "transform 1s";
+        childB.style.transition = "transform 0.3s";
         childB.style.transform = `translateX(${dx}px) translateY(${dy}px)`;
         childB.addEventListener("transitionend",
             ()=>{
@@ -346,9 +346,12 @@ class BinaryTree extends ADT{
         this.levels = Math.floor(Math.log(this.list.length)/Math.log(2))+1;
         this.params["h_dist"]  = this.params["h_dist"] ?  Number(this.params["h_dist"]) : 72;  // horizontal dist level 1
         this.params["v_dist"]  = this.params["v_dist"] ?  Number(this.params["v_dist"]) : 72;  // vertical distance between 2 levels
-        this.params["width"] = this.params["width"] ?  Number(this.params["width"]) : 300;  
+        this.params["width"] = this.params["width"] ?  Number(this.params["width"]) : 350;  
         this.params["height"] = this.params["height"] ?  Number(this.params["height"]) : this.levels*this.params["h_dist"];
-        
+        this.params["x_radius"] = this.params["x_radius"] ?  Number(this.params["x_radius"]) : 27;  
+        this.params["y_radius"] = this.params["y_radius"] ?  Number(this.params["y_radius"]) : 27; 
+
+
         this.coords = [];
         //coordinates of nodes
         this.calculate_coords();
@@ -389,9 +392,9 @@ class BinaryTree extends ADT{
         this.drawing.setAttribute("height",this.params["height"]);
         this.drawing.setAttribute("viewBox","0 0 "+this.params["width"]+" "+this.params["height"]);
 
-        var arbre = document.createElementNS('http://www.w3.org/2000/svg',"g");
+        let arbre = document.createElementNS('http://www.w3.org/2000/svg',"g");
         this.drawing.appendChild(arbre);
-        arbre.setAttribute("transform","translate("+this.params["h_dist"]*2+" ,30)");
+        arbre.setAttribute("transform","translate("+(Number(this.params["h_dist"])*2+20)+" ,30)");
 
         // draw edges first
         for(var i = 0; i < this.list.length; i++){
@@ -405,7 +408,23 @@ class BinaryTree extends ADT{
                     edge.setAttribute("y1",this.coords[par_no][1]);
                     edge.setAttribute("x2",x);
                     edge.setAttribute("y2",y);
+                    edge.setAttribute("id",this.container.id+"_edge_"+par_no+"_"+i);
                     arbre.appendChild(edge);
+
+                    var tag = document.createElementNS('http://www.w3.org/2000/svg',"text"); // tag on edge
+                    tag.innerHTML = "";
+                    let decalage;
+                    if(i % 2 == 0){
+                        tag.setAttribute("text-anchor","start");
+                        decalage = 5;
+                    }else{
+                        tag.setAttribute("text-anchor","end");
+                        decalage = -5;
+                    }
+                    tag.setAttribute("id",this.container.id+"_tag_"+par_no+"_"+i);
+                    tag.setAttribute("x",(this.coords[par_no][0]+x)/2+decalage);
+                    tag.setAttribute("y",(this.coords[par_no][1]+y)/2);
+                    arbre.appendChild(tag);
                 }
             }
         }
@@ -418,6 +437,7 @@ class BinaryTree extends ADT{
                 var node = document.createElementNS('http://www.w3.org/2000/svg',"g");
                 var ellipse = document.createElementNS('http://www.w3.org/2000/svg',"ellipse");
                 var text = document.createElementNS('http://www.w3.org/2000/svg',"text");
+
                 node.appendChild(ellipse);
                 node.appendChild(text);
                 arbre.appendChild(node);
@@ -433,15 +453,15 @@ class BinaryTree extends ADT{
                 text.innerHTML = this.list[i];
                 text.setAttribute("text-anchor","middle");
 
-                ellipse.setAttribute("rx", 27);
-                ellipse.setAttribute("ry",27);
+                ellipse.setAttribute("rx", this.params["x_radius"]);
+                ellipse.setAttribute("ry", this.params["y_radius"]);
 
                 ellipse.setAttribute("cx", x);
                 ellipse.setAttribute("cy", y);
                 ellipse.setAttribute("id",this.container.id+"_ellipse_"+i);
 
                 text.setAttribute("x", x);
-                text.setAttribute("y", y+9);
+                text.setAttribute("y", y+this.params["y_radius"]/3);
                 text.setAttribute("id",this.container.id+"_text_"+i);
             }
         }
@@ -456,8 +476,55 @@ class BinaryTree extends ADT{
     get_node(i){
         return document.querySelector("#"+this.container.id+"_node_"+i);
     }
+    get_edge(par,child){
+        let edge = document.querySelector("#"+this.container.id+"_edge_"+par+"_"+child);
+        if(edge){
+            return edge;
+        }else{
+            return document.querySelector("#"+this.container.id+"_edge_"+child+"_"+par);
+        }
+    }
+    get_left_edge(i){
+        return this.get_edge(i,2*(i+1)-1);
+    }
+    get_right_edge(i){
+        return this.get_edge(i,2*(i+1));
+    }
+    get_parent_edge(i){
+        return this.get_edge(Math.floor((i-1)/2),i);
+    }
+
+    get_edge_tag(par,child){
+        let edge = document.querySelector("#"+this.container.id+"_tag_"+par+"_"+child);
+        if(edge){
+            return edge;
+        }else{
+            return document.querySelector("#"+this.container.id+"_tag_"+child+"_"+par);
+        }
+    }
+    get_left_edge_tag(i){
+        return this.get_edge_tag(i,2*(i+1)-1);
+    }
+    get_right_edge_tag(i){
+        return this.get_edge_tag(i,2*(i+1));
+    }
+    get_parent_edge_tag(i){
+        return this.get_edge_tag(Math.floor((i-1)/2),i);
+    }
+
+    path_from_root(i){
+        let path = [i];
+        while( i!=0 ){
+            i = Math.floor((i-1)/2);
+            path.push(i)
+        }
+        return path.reverse();
+    }
 
     NLR(i){   //DFS : node, left, right
+        if(i==0){
+            this.NLR_list = [];  //init
+        }
         if(String(this.list[i])){
             this.NLR_list.push(this.list[i]);
             if(2*i+1 < this.list.length){
@@ -469,6 +536,9 @@ class BinaryTree extends ADT{
         }
     }
     LNR(i){   //DFS : left, node, right
+        if(i==0){
+            this.LNR_list = [];  //init
+        }
         if(String(this.list[i])){
             if(2*i+1 < this.list.length){
                 this.LNR(2*i+1);
@@ -480,6 +550,9 @@ class BinaryTree extends ADT{
         }
     }
     LRN(i){   //DFS : left, right, node
+        if(i==0){
+            this.LRN_list = [];  //init
+        }
         if(String(this.list[i])){
             if(2*i+1 < this.list.length){
                 this.LRN(2*i+1);
@@ -491,8 +564,10 @@ class BinaryTree extends ADT{
         }
     }
 
-    is_BST(i){
-
+    is_BST(){
+        this.LNR(0);
+        console.log(this.LNR_list);
+        return liste_triee(this.LNR_list);
     }
 }
 

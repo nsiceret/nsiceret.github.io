@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ajout dans un ABR</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="utils.js"></script>
+<style>
+    text{
+        color: hsl(217, 71%, 53%);
+        fill: hsl(217, 71%, 53%);
+        font-size: 100%;
+        text-anchor: "middle";
+    }
+    ellipse{
+        fill: hsl(0, 0%, 86%);
+        stroke: hsl(217, 71%, 53%);
+        stroke-width: 3;
+    }
+    .vide{
+        fill: hsl(48, 100%, 96%) ;
+    }
+    .mauvaise_ellipse{
+
+    }
+    .mauvais_texte{
+
+    }
+    .bonne_ellipse{
+        stroke-width: 5;
+        fill: hsl(347, 90%, 96%);
+        stroke: hsl(348, 100%, 61%);
+    }
+    .bon_texte{
+        fill: hsl(348, 100%, 61%);
+        color: hsl(348, 100%, 61%);
+    }
+    line{
+        stroke-width: 3;
+        fill: none;
+        stroke: hsl(217, 71%, 53%);
+    }
+</style>
+</head>
+<body>
+<section class="section">
+    <h1 class="title">Cachez le trésor</h1>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>La situation</p></div>
+                <div class="message-body">
+                    <p class="block">
+                        À chaque fois qu'ils dévalisent quelqu'un, les 40 voleurs cachent leur butin dans leur grotte, qui est composée de salles reliées par des couloirs. Les voleurs déposent un seul butin par salle.
+                        </p>
+                    <p class="block">Vous avez un plan de la grotte où sont indiquées les salles et le nombre de pièces d'or qu'elles contiennent. L'entrée de la grotte est située tout en haut. Les salles vides sont marquées par un point d'interrogation.
+                    </p>
+                    <p class="block">
+                    La grotte est organisée ainsi :
+                    </p>
+                    <p class="block">Depuis une salle, on peut soit descendre vers la gauche, soit descendre vers la droite, soit ne pas descendre du tout. Par exemple, depuis la salle 17 on peut descendre à gauche vers 10 ou à droite vers 20.
+                    </p>
+                    <p class="block" id="explicg">
+                    Quand les voleurs ont un butin inférieur à celui de la salle où ils se trouvent, ils l'emmènent vers la salle de gauche.
+                    <p class="block" id="explicd">Quand les voleurs ont un butin supérieur à celui de la salle où ils se trouvent, ils l'emmènent vers la salle de droite.
+                    </p>
+                    <p class="block">Les voleurs déposent leur butin dans la première salle vide qu'ils rencontrent.</p>
+                </div>
+            </article>
+        </div>
+        <div class="column">
+            <article class="message is-warning" id="entete-message">
+                <div class="message-header">
+                    <p id="titre-message">La grotte </p>
+                </div>
+                <div class="message-body">
+                    <div id="arbre" class="block">
+                    </div>
+                    <p class="block" id="message">Les 40 voleurs reviennent d'une razzia où ils ont dérobé <span id="nb"></span> pièces d'or. Dans quelle salle doivent-ils placer leur nouveau butin pour respecter leur organisation&nbsp;? Cliquez sur une des salles vides : elles sont marquées par un point d'interrogation.
+                    </p>
+                </div>
+            </article>
+        </div>       
+</section>
+<script>
+liste_abr = [17,10,20,8,13,"?","?","?","?","?","?"];
+
+let nb = liste_abr[0];
+let chemin;  // chemin solution
+
+while(liste_abr.includes(nb)){
+    nb = Math.floor(Math.random()*20)+4;
+}
+
+document.querySelector("#nb").innerHTML = nb;
+
+let arbre = new BinaryTree(liste_abr,
+                {"h_dist":100,
+                "width":430,
+                "height":300,
+                "x_radius":15,
+                "y_radius":15
+                });
+
+arbre.draw(document.querySelector("#arbre"));
+//arbre.drawing.firstChild.style.transform ="translate(230px)";
+
+init();
+
+function init(){
+    for(var i in liste_abr){
+        if(arbre.get_text(i).innerHTML=="?"){
+            var ell = arbre.get_ellipse(i);
+            ell.classList.add("vide");
+            arbre.get_node(i).classList.add("is-clickable");
+            arbre.get_node(i).addEventListener("click",verifier);
+        }
+    }
+}
+
+function inserer(elt,i){
+    if(arbre.list[i]=="?"){
+        arbre.list[i] = elt;
+        return i;
+    }else if(arbre.list[i] < elt){
+        return inserer(elt,2*i+2);
+    }else{
+        return inserer(elt,2*i+1);
+    }
+
+}
+
+function verifier(evt){
+    let i = Number(evt.target.parentNode.dataset.index);
+    console.log(i);
+    let j = inserer(nb,0);
+    chemin = arbre.path_from_root(j);
+
+    arbre.list[i] = "⚠";
+    arbre.list[j] = nb;
+    arbre.draw();
+
+    document.querySelector("#entete-message").classList.remove("is-warning");
+
+    arbre.get_ellipse(i).classList.add("mauvaise_ellipse");
+    arbre.get_text(i).classList.add("mauvais_texte");    
+
+    if(i == j){
+        document.querySelector("#titre-message").innerHTML = "BRAVO !";
+        document.querySelector("#entete-message").classList.add("is-success");
+        document.querySelector("#message").innerHTML = "";
+
+        arbre.draw();
+    }else{
+        document.querySelector("#titre-message").innerHTML = "Erreur ! Regardez la correction.<br>";
+        document.querySelector("#entete-message").classList.add("is-danger");
+        let comp, par, index, msg;
+        msg = document.querySelector("#message");
+        msg.innerHTML = "On part de l'entrée : "+arbre.list[0]+"<br>";
+        for(var k in chemin){
+            index = chemin[k];
+            par = arbre.list[chemin[k-1]];
+            arbre.get_ellipse(index).classList.add("bonne_ellipse");
+            arbre.get_text(index).classList.add("bon_texte");
+            if(arbre.get_parent_edge(index)){
+                arbre.get_parent_edge(index).classList.add("bonne_ellipse");
+                comp = nb < par;
+                arbre.get_parent_edge_tag(index).classList.add("bon_texte");
+                arbre.get_parent_edge_tag(index).innerHTML = nb+(comp ? " < " : " > ")+par;
+
+                msg.innerHTML += "Comme "+nb+(comp ? " < " : " > ")+par+", on descend à "+(comp ? "gauche" : "droite")+". ";
+                if(k == chemin.length-1){
+                    msg.innerHTML += "La salle est vide, on dépose le butin.<br>";  
+                }else{
+                    msg.innerHTML += "On se retrouve à "+arbre.list[index]+".<br>";
+                } 
+            }
+        }
+    }
+    document.querySelector("#message").innerHTML += "Vous pouvez recommencer avec un nombre aléatoire en rechargeant la page.";
+}
+</script>
+</body>
+</html>
