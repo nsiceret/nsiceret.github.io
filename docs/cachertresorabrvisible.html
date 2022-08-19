@@ -58,7 +58,7 @@
                     <p class="block">
                     La grotte est organisée ainsi :
                     </p>
-                    <p class="block">Depuis une salle, on peut soit descendre vers la gauche, soit descendre vers la droite, soit ne pas descendre du tout. Par exemple, depuis la salle 17 on peut descendre à gauche vers 10 ou à droite vers 20.
+                    <p class="block">Depuis une salle, on peut soit descendre vers la gauche, soit descendre vers la droite, soit ne pas descendre du tout. Par exemple, depuis l'enrée (salle <span id="racine"></span>) on peut descendre à gauche vers <span id="agauche"></span> ou à droite vers <span id="adroite"></span>.
                     </p>
                     <p class="block" id="explicg">
                     Quand les voleurs ont un butin inférieur à celui de la salle où ils se trouvent, ils l'emmènent vers la salle de gauche.
@@ -83,32 +83,53 @@
         </div>       
 </section>
 <script>
-liste_abr = [17,10,20,8,13,"?","?","?","?","?","?"];
+
+const longueur = Math.floor(Math.random()*5)+3;
+let tresor,liste_abr,arbre;
+
+console.log("avant : "+liste_abr);
+
+function creer_arbre(){
+    tresor = Math.floor(Math.random()*20)+4;
+    liste_abr = [tresor];
+
+    while(liste_abr.length < longueur){
+        tresor = Math.floor(Math.random()*20)+4;
+        if(!liste_abr.includes(tresor)){
+            liste_abr.push(tresor);
+        }
+    }
+    arbre = new BinaryTree(liste_abr,
+                {//"h_dist":100,
+                //"width":1000,
+                //"height":300,
+                "x_radius":15,
+                "y_radius":15,
+                "show_post_leaves":"?",
+                "is_BST":true
+        });
+}
+
+creer_arbre();
+while(arbre.levels() > 4){
+    console.log(arbre.list)
+    creer_arbre();
+}
 
 let nb = liste_abr[0];
 let chemin;  // chemin solution
-
 while(liste_abr.includes(nb)){
     nb = Math.floor(Math.random()*20)+4;
 }
 
 document.querySelector("#nb").innerHTML = nb;
 
-let arbre = new BinaryTree(liste_abr,
-                {"h_dist":100,
-                "width":430,
-                "height":300,
-                "x_radius":15,
-                "y_radius":15
-                });
-
 arbre.draw(document.querySelector("#arbre"));
-//arbre.drawing.firstChild.style.transform ="translate(230px)";
 
 init();
 
 function init(){
-    for(var i in liste_abr){
+    for(var i in arbre.list){
         if(arbre.get_text(i).innerHTML=="?"){
             var ell = arbre.get_ellipse(i);
             ell.classList.add("vide");
@@ -116,24 +137,16 @@ function init(){
             arbre.get_node(i).addEventListener("click",verifier);
         }
     }
+    document.querySelector("#racine").innerHTML = arbre.list[0];
+    document.querySelector("#agauche").innerHTML = arbre.is_empty_node(1) ? "une salle vide" : arbre.list[1];
+    document.querySelector("#adroite").innerHTML = arbre.is_empty_node(2) ? "une salle vide" : arbre.list[2];
 }
 
-function inserer(elt,i){
-    if(arbre.list[i]=="?"){
-        arbre.list[i] = elt;
-        return i;
-    }else if(arbre.list[i] < elt){
-        return inserer(elt,2*i+2);
-    }else{
-        return inserer(elt,2*i+1);
-    }
-
-}
 
 function verifier(evt){
     let i = Number(evt.target.parentNode.dataset.index);
     console.log(i);
-    let j = inserer(nb,0);
+    let j = arbre.insert_in_BST(nb,0);
     chemin = arbre.path_from_root(j);
 
     arbre.list[i] = "⚠";
@@ -154,30 +167,31 @@ function verifier(evt){
     }else{
         document.querySelector("#titre-message").innerHTML = "Erreur ! Regardez la correction.<br>";
         document.querySelector("#entete-message").classList.add("is-danger");
-        let comp, par, index, msg;
-        msg = document.querySelector("#message");
-        msg.innerHTML = "On part de l'entrée : "+arbre.list[0]+"<br>";
-        for(var k in chemin){
-            index = chemin[k];
-            par = arbre.list[chemin[k-1]];
-            arbre.get_ellipse(index).classList.add("bonne_ellipse");
-            arbre.get_text(index).classList.add("bon_texte");
-            if(arbre.get_parent_edge(index)){
-                arbre.get_parent_edge(index).classList.add("bonne_ellipse");
-                comp = nb < par;
-                arbre.get_parent_edge_tag(index).classList.add("bon_texte");
-                arbre.get_parent_edge_tag(index).innerHTML = nb+(comp ? " < " : " > ")+par;
+        
+    }
+    let comp, par, index, msg;
+    msg = document.querySelector("#message");
+    msg.innerHTML = "On part de l'entrée : "+arbre.list[0]+"<br>";
+    for(var k in chemin){
+        index = chemin[k];
+        par = arbre.list[chemin[k-1]];
+        arbre.get_ellipse(index).classList.add("bonne_ellipse");
+        arbre.get_text(index).classList.add("bon_texte");
+        if(arbre.get_parent_edge(index)){
+            arbre.get_parent_edge(index).classList.add("bonne_ellipse");
+            comp = nb < par;
+            arbre.get_parent_edge_tag(index).classList.add("bon_texte");
+            arbre.get_parent_edge_tag(index).innerHTML = nb+(comp ? " < " : " > ")+par;
 
-                msg.innerHTML += "Comme "+nb+(comp ? " < " : " > ")+par+", on descend à "+(comp ? "gauche" : "droite")+". ";
-                if(k == chemin.length-1){
-                    msg.innerHTML += "La salle est vide, on dépose le butin.<br>";  
-                }else{
-                    msg.innerHTML += "On se retrouve à "+arbre.list[index]+".<br>";
-                } 
-            }
+            msg.innerHTML += "Comme "+nb+(comp ? " < " : " > ")+par+", on descend à "+(comp ? "gauche" : "droite")+". ";
+            if(k == chemin.length-1){
+                msg.innerHTML += "La salle est vide, on dépose le butin.<br>";  
+            }else{
+                msg.innerHTML += "On se retrouve à "+arbre.list[index]+".<br>";
+            } 
         }
     }
-    document.querySelector("#message").innerHTML += "Vous pouvez recommencer avec un nombre aléatoire en rechargeant la page.";
+    document.querySelector("#message").innerHTML += "Vous pouvez recommencer une énigme aléatoire en rechargeant la page.";
 }
 </script>
 </body>

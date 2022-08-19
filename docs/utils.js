@@ -343,16 +343,26 @@ class Stack extends ADT{
 class BinaryTree extends ADT{
     constructor(list=[],params={},item_params={}){
         super(list,params,item_params);
-        this.levels = Math.floor(Math.log(this.list.length)/Math.log(2))+1;
-        this.params["h_dist"]  = this.params["h_dist"] ?  Number(this.params["h_dist"]) : 72;  // horizontal dist level 1
+        // other params :
+        // show_post_leaves, true -> empty nodes visible, else can be a String
+        // is_BST -> force BST
+        if(this.params["is_BST"]){
+            this.convert_to_BST();
+        }
+        if(params["show_post_leaves"]){
+            this.add_post_leaves();
+        }
+
+        this.params["h_dist"]  = this.params["h_dist"] ?  Number(this.params["h_dist"]) : Math.pow(2,this.levels())*5;  // horizontal dist level 1
         this.params["v_dist"]  = this.params["v_dist"] ?  Number(this.params["v_dist"]) : 72;  // vertical distance between 2 levels
         this.params["width"] = this.params["width"] ?  Number(this.params["width"]) : 350;  
-        this.params["height"] = this.params["height"] ?  Number(this.params["height"]) : this.levels*this.params["h_dist"];
+        this.params["height"] = this.params["height"] ?  Number(this.params["height"]) : this.levels()*this.params["v_dist"];
         this.params["x_radius"] = this.params["x_radius"] ?  Number(this.params["x_radius"]) : 27;  
         this.params["y_radius"] = this.params["y_radius"] ?  Number(this.params["y_radius"]) : 27; 
 
 
         this.coords = [];
+
         //coordinates of nodes
         this.calculate_coords();
         this.NLR_list = [];
@@ -365,7 +375,7 @@ class BinaryTree extends ADT{
         // calculate coords
         var branch = 0;
         var total = 0;
-        for(var level = 0; level < this.levels; level++){
+        for(var level = 0; level < this.levels(); level++){
             var y = (level)*this.params["v_dist"];
             var sibling_dist = 2*this.params["h_dist"]/Math.pow(2,level-1);
             var nodes = Math.pow(2,level); // number of nodes
@@ -398,7 +408,7 @@ class BinaryTree extends ADT{
 
         // draw edges first
         for(var i = 0; i < this.list.length; i++){
-            if(String(this.list[i])){
+            if(this.is_drawable_node(i)){
                 let x = this.coords[i][0];
                 let y = this.coords[i][1];
                 if(i > 0){
@@ -430,7 +440,7 @@ class BinaryTree extends ADT{
         }
         // draw nodes
         for(var i = 0; i < this.list.length; i++){
-            if(String(this.list[i])){
+            if(this.is_drawable_node(i)){
                 let x = this.coords[i][0];
                 let y = this.coords[i][1];
 
@@ -446,11 +456,21 @@ class BinaryTree extends ADT{
                     node.setAttribute("onclick",this.item_params["click"]);
                     node.classList.add("is-clickable");
                 }
-                node.dataset.value = this.list[i];
+                /*
+                if(Array.isArray(item)){
+                    value = item[0];
+                    display = item[1];
+                }else{
+                    value = item;
+                    display = item;
+                }
+                */
+
+                node.dataset.value = this.get_value(i);
                 node.dataset.index = i;
                 node.setAttribute("id",this.container.id+"_node_"+i);
 
-                text.innerHTML = this.list[i];
+                text.innerHTML = this.get_display(i);
                 text.setAttribute("text-anchor","middle");
 
                 ellipse.setAttribute("rx", this.params["x_radius"]);
@@ -563,11 +583,91 @@ class BinaryTree extends ADT{
             this.LRN_list.push(this.list[i]);
         }
     }
-
     is_BST(){
         this.LNR(0);
         console.log(this.LNR_list);
         return liste_triee(this.LNR_list);
+    }
+    convert_to_BST(){
+        let new_list = this.list.slice();
+        this.list = [new_list[0]];
+        for(var i=1; i< new_list.length;i++){
+            this.insert_in_BST(new_list[i],0);
+            console.log(this.list);
+        }
+    }
+
+    get_value(i){
+        if(Array.isArray(this.list[i])){
+            return this.list[i][0]
+        }else{
+            return this.list[i];
+        }
+    }
+    get_display(i){
+        if(Array.isArray(this.list[i])){
+            return this.list[i][1]
+        }else{
+            return this.list[i];
+        }
+    }
+
+    insert_in_BST(elt,i){
+        let val = this.get_value(i);
+        if(val < elt){
+            if(this.has_right_child(i)){
+                return this.insert_in_BST(elt,2*i+2);
+            }else{
+                this.list[2*i+2] = elt;
+                return 2*i+2
+            }
+            
+        }else{
+            if(this.has_left_child(i)){
+                return this.insert_in_BST(elt,2*i+1);
+            }else{
+                this.list[2*i+1] = elt;
+                return 2*i+1;
+            }
+        }
+    }
+    is_drawable_node(i){ //must draw this node ?
+        return ! this.is_empty_node(i) || this.get_display(i)==this.params["show_post_leaves"];
+    }
+    is_empty_node(i){
+        console.log(i+"est"+!this.get_value(i)+" vide ! : "+this.get_value(i));
+        return !this.get_value(i);
+    }
+    has_left_child(i){
+        return  !(this.get_value(2*i+1)==false || this.get_value(2*i+1)==undefined);
+    }
+    has_right_child(i){
+        return !(this.get_value(2*i+2)==false || this.get_value(2*i+2)==undefined);
+    }
+
+    is_leaf(i){
+        let val = this.get_value(i);
+        let left = this.get_value(2*i+1);
+        let right = this.get_value(2*i+2);
+        return (val && (! this.has_left_child(i)) && (! this.has_right_child(i))) == true;
+    }
+    add_post_leaves(){
+        console.log("sans post");
+        console.log(this.list);
+        let copy = this.list.slice();
+        for(var i in copy){
+            if(! this.has_left_child(i) && ! this.is_empty_node(i)){
+                this.list[2*i+1] = [false,this.params["show_post_leaves"]];
+            }
+            if(! this.has_right_child(i) && ! this.is_empty_node(i)){
+                this.list[2*i+2] = [false,this.params["show_post_leaves"]];
+            }
+        }
+        console.log("avec post");
+        console.log(this.list);
+    }
+    levels(){
+        return Math.floor(Math.log(this.list.length)/Math.log(2))+1;
     }
 }
 
