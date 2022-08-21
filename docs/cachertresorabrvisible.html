@@ -21,19 +21,22 @@
         fill: hsl(48, 100%, 96%) ;
     }
     .mauvaise_ellipse{
-
-    }
-    .mauvais_texte{
-
-    }
-    .bonne_ellipse{
         stroke-width: 5;
         fill: hsl(347, 90%, 96%);
         stroke: hsl(348, 100%, 61%);
     }
-    .bon_texte{
+    .mauvais_texte{
         fill: hsl(348, 100%, 61%);
-        color: hsl(348, 100%, 61%);
+        color: #48c78e;
+    }
+    .bonne_ellipse{
+        stroke-width: 5;
+        fill: hsl(142, 52%, 96%);
+        stroke:  #257953 ;
+    }
+    .bon_texte{
+        fill:  #257953;
+        color: #257953;
     }
     line{
         stroke-width: 3;
@@ -44,12 +47,12 @@
 </head>
 <body>
 <section class="section">
-    <h1 class="title">Cachez le trésor</h1>
+    <h1 class="title">Cachez le trésor grâce à la carte</h1>
     <div class="columns">
         <div class="column">
             <article class="message is-info">
                 <div class="message-header"><p>La situation</p></div>
-                <div class="message-body">
+                <div class="message-body" id="situation">
                     <p class="block">
                         À chaque fois qu'ils dévalisent quelqu'un, les 40 voleurs cachent leur butin dans leur grotte, qui est composée de salles reliées par des couloirs. Les voleurs déposent un seul butin par salle.
                         </p>
@@ -58,7 +61,7 @@
                     <p class="block">
                     La grotte est organisée ainsi :
                     </p>
-                    <p class="block">Depuis une salle, on peut soit descendre vers la gauche, soit descendre vers la droite, soit ne pas descendre du tout. Par exemple, depuis l'enrée (salle <span id="racine"></span>) on peut descendre à gauche vers <span id="agauche"></span> ou à droite vers <span id="adroite"></span>.
+                    <p class="block">Depuis une salle, on peut soit descendre vers la gauche, soit descendre vers la droite, soit ne pas descendre du tout. Par exemple, depuis l'entrée (salle <span id="racine"></span>) on peut descendre à gauche vers <span id="agauche"></span> ou à droite vers <span id="adroite"></span>.
                     </p>
                     <p class="block" id="explicg">
                     Quand les voleurs ont un butin inférieur à celui de la salle où ils se trouvent, ils l'emmènent vers la salle de gauche.
@@ -144,6 +147,8 @@ function init(){
 
 
 function verifier(evt){
+    document.querySelector("#situation").innerHTML = `<a title="Edmund Dulac, Public domain, via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File:Stories_from_the_Arabian_nights_-_London_1907_-_plate_15.jpg"><img width="512" alt="Stories from the Arabian nights - London 1907 - plate 15" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Stories_from_the_Arabian_nights_-_London_1907_-_plate_15.jpg/512px-Stories_from_the_Arabian_nights_-_London_1907_-_plate_15.jpg"></a>`;
+
     let i = Number(evt.target.parentNode.dataset.index);
     console.log(i);
     let j = arbre.insert_in_BST(nb,0);
@@ -152,22 +157,17 @@ function verifier(evt){
     arbre.list[i] = "⚠";
     arbre.list[j] = nb;
     arbre.draw();
-
-    document.querySelector("#entete-message").classList.remove("is-warning");
-
-    arbre.get_ellipse(i).classList.add("mauvaise_ellipse");
-    arbre.get_text(i).classList.add("mauvais_texte");    
+    let reussite = i==j;
+    document.querySelector("#entete-message").classList.remove("is-warning");   
 
     if(i == j){
         document.querySelector("#titre-message").innerHTML = "BRAVO !";
         document.querySelector("#entete-message").classList.add("is-success");
         document.querySelector("#message").innerHTML = "";
-
         arbre.draw();
     }else{
         document.querySelector("#titre-message").innerHTML = "Erreur ! Regardez la correction.<br>";
         document.querySelector("#entete-message").classList.add("is-danger");
-        
     }
     let comp, par, index, msg;
     msg = document.querySelector("#message");
@@ -175,12 +175,23 @@ function verifier(evt){
     for(var k in chemin){
         index = chemin[k];
         par = arbre.list[chemin[k-1]];
-        arbre.get_ellipse(index).classList.add("bonne_ellipse");
-        arbre.get_text(index).classList.add("bon_texte");
+        if(reussite){
+            arbre.get_ellipse(index).classList.add("bonne_ellipse");
+            arbre.get_text(index).classList.add("bon_texte");
+        }else{
+            arbre.get_ellipse(index).classList.add("mauvaise_ellipse");
+            arbre.get_text(index).classList.add("mauvais_texte");
+        }
+        
         if(arbre.get_parent_edge(index)){
-            arbre.get_parent_edge(index).classList.add("bonne_ellipse");
+            if(reussite){
+                arbre.get_parent_edge(index).classList.add("bonne_ellipse");
+                arbre.get_parent_edge_tag(index).classList.add("bon_texte");
+            }else{
+                arbre.get_parent_edge(index).classList.add("mauvaise_ellipse");
+                arbre.get_parent_edge_tag(index).classList.add("mauvais_texte");
+            }
             comp = nb < par;
-            arbre.get_parent_edge_tag(index).classList.add("bon_texte");
             arbre.get_parent_edge_tag(index).innerHTML = nb+(comp ? " < " : " > ")+par;
 
             msg.innerHTML += "Comme "+nb+(comp ? " < " : " > ")+par+", on descend à "+(comp ? "gauche" : "droite")+". ";
@@ -191,7 +202,7 @@ function verifier(evt){
             } 
         }
     }
-    document.querySelector("#message").innerHTML += "Vous pouvez recommencer une énigme aléatoire en rechargeant la page.";
+    document.querySelector("#message").innerHTML += "Vous pouvez recommencer une énigme aléatoire en <a class='is-clickable is-info' onclick='location.reload();'>rechargeant la page</a>.";
 }
 </script>
 </body>
