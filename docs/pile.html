@@ -27,7 +27,7 @@
     </article>        
     </div>
     <div class="column">
-        <article class="message is-success" id="entete-message">
+        <article class="message is-warning" id="entete-message">
             <div class="message-header">
                 <p id="message">Sauriez-vous reconstituter la pile ci-dessous ?</p>
             </div>
@@ -46,7 +46,7 @@
                               ou
                             </div>
                             <div class="field-body">
-                                <div id="btn_depiler" class="button is-success" onclick="enlever();">dépiler</div>
+                                <div id="btn_depiler" class="button is-warning" onclick="enlever();">dépiler</div>
                             </div> 
                         </div>
                     </div>
@@ -77,7 +77,7 @@ liste_animaux = ["🦑","🪲","🐼","🦊","🦐","🦆","🐯","🐸"];
 creer_liste_boutons(liste_animaux,
                     "btn_empiler",
                     {"click":empiler,
-                    "classes_btn":["has-background-success-light"],
+                    "classes_btn":["has-background-warning-light"],
                     "tag":"span"
                     });
 
@@ -100,47 +100,27 @@ function verifier(){
     var boutons = document.querySelector("#btn_empiler").getElementsByClassName("button");
     if (q.is_equal_to(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle pile.";
-        document.getElementById("entete-message").classList.remove("is-success");
-        document.getElementById("entete-message").classList.add("is-danger");
-/*
-        for(var j in q.list){
-            q.remove_class_item(j,"has-background-success-light");
-            q.add_class_item(j,"has-background-danger-light");
-        }
-        for(var j in p.list){
-            p.remove_class_item(j,"has-background-success-light");
-            p.add_class_item(j,"has-background-danger-light");
-        }
-*/     
+        document.getElementById("entete-message").classList.remove("is-warning");
+        document.getElementById("entete-message").classList.add("is-success");
+    
         for(var j = 0 ; j < boutons.length ;j++){
-            boutons[j].classList.remove("has-background-success-light");
-            boutons[j].classList.add("has-background-danger-light");
+            boutons[j].classList.remove("has-background-warning-light");
+            boutons[j].classList.add("has-background-success-light");
         }
-        document.querySelector("#btn_depiler").classList.remove("is-success");
-        document.querySelector("#btn_depiler").classList.add("is-danger");
+        document.querySelector("#btn_depiler").classList.remove("is-warning");
+        document.querySelector("#btn_depiler").classList.add("is-success");
 
     }else{
         document.getElementById("message").innerHTML = "Sauriez-vous reconstituter la pile ci-dessous ?";
-        document.getElementById("entete-message").classList.add("is-success");
-        document.getElementById("entete-message").classList.remove("is-danger");
-
-/*
-        for(var j in q.list){
-            q.add_class_item(j,"has-background-success-light");
-            q.remove_class_item(j,"has-background-danger-light");
-        }
-        for(var j in p.list){
-            p.add_class_item(j,"has-background-success-light");
-            p.remove_class_item(j,"has-background-danger-light");
-        }
-*/
+        document.getElementById("entete-message").classList.add("is-warning");
+        document.getElementById("entete-message").classList.remove("is-success");
         
         for(var j = 0 ; j < boutons.length ;j++){
-            boutons[j].classList.add("has-background-success-light");
-            boutons[j].classList.remove("has-background-danger-light");
+            boutons[j].classList.add("has-background-warning-light");
+            boutons[j].classList.remove("has-background-success-light");
         }
-        document.querySelector("#btn_depiler").classList.add("is-success");
-        document.querySelector("#btn_depiler").classList.remove("is-danger");
+        document.querySelector("#btn_depiler").classList.add("is-warning");
+        document.querySelector("#btn_depiler").classList.remove("is-success");
     }
 }
 

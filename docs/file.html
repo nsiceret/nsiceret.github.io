@@ -28,7 +28,7 @@
     </article>        
     </div>
     <div class="column">
-        <article class="message is-success" id="entete-message">
+        <article class="message is-warning" id="entete-message">
             <div class="message-header">
                 <p id="message">Sauriez-vous reconstituter la file ci-dessous ?</p>
             </div>
@@ -47,7 +47,7 @@
                               ou
                             </div>
                             <div class="field-body">
-                                <div class="button is-success" id="btn_defiler" onclick="enlever();">défiler</div>
+                                <div class="button is-warning" id="btn_defiler" onclick="enlever();">défiler</div>
                             </div> 
                         </div>
                     </div>
@@ -76,11 +76,11 @@ liste_animaux = ["🦑","🪲","🐼","🦊","🦐","🦆","🐯","🐸"];
 creer_liste_boutons(liste_animaux,
                     "btn_enfiler",
                     {"click":enfiler,
-                    "classes_btn":["has-background-success-light"],
+                    "classes_btn":["has-background-warning-light"],
                     "tag":"span"
                     });
 
-var p = new List([],{},{"classes":["has-background-success-light"]});
+var p = new List([],{},{"classes":["has-background-warning-light"]});
 p.draw(document.querySelector("#file_essai"));
 
 
@@ -88,7 +88,7 @@ var file_objectif = liste_animaux.sort(function () {
   return Math.random() - 0.5;
 });
 file_objectif = file_objectif.slice(-5);
-var q = new List(file_objectif,{},{"classes":["has-background-success-light"]});
+var q = new List(file_objectif,{},{"classes":["has-background-warning-light"]});
 q.draw(document.querySelector("#objectif"));
 
 
@@ -96,42 +96,42 @@ function verifier(){
     var boutons = document.querySelector("#btn_enfiler").getElementsByClassName("button");
     if (q.is_equal_to(p)){
         document.getElementById("message").innerHTML = "BRAVO ! Rechargez la page pour avoir une nouvelle file.";
-        document.getElementById("entete-message").classList.remove("is-success");
-        document.getElementById("entete-message").classList.add("is-danger");
+        document.getElementById("entete-message").classList.remove("is-warning");
+        document.getElementById("entete-message").classList.add("is-success");
         for(var j in q.list){
-            q.remove_class_item(j,"has-background-success-light");
-            q.add_class_item(j,"has-background-danger-light");
+            q.remove_class_item(j,"has-background-warning-light");
+            q.add_class_item(j,"has-background-success-light");
         }
         for(var j in p.list){
-            p.remove_class_item(j,"has-background-success-light");
-            p.add_class_item(j,"has-background-danger-light");
+            p.remove_class_item(j,"has-background-warning-light");
+            p.add_class_item(j,"has-background-success-light");
         }
         for(var j = 0 ; j < boutons.length ;j++){
-            boutons[j].classList.remove("has-background-success-light");
-            boutons[j].classList.add("has-background-danger-light");
+            boutons[j].classList.remove("has-background-warning-light");
+            boutons[j].classList.add("has-background-success-light");
         }
-        document.querySelector("#btn_defiler").classList.remove("is-success");
-        document.querySelector("#btn_defiler").classList.add("is-danger");
+        document.querySelector("#btn_defiler").classList.remove("is-warning");
+        document.querySelector("#btn_defiler").classList.add("is-success");
         
     }else{
         document.getElementById("message").innerHTML = "Sauriez-vous reconstituter la file ci-dessous ?";
-        document.getElementById("entete-message").classList.add("is-success");
-        document.getElementById("entete-message").classList.remove("is-danger");
+        document.getElementById("entete-message").classList.add("is-warning");
+        document.getElementById("entete-message").classList.remove("is-success");
         for(var j in q.list){
-            q.add_class_item(j,"has-background-success-light");
-            q.remove_class_item(j,"has-background-danger-light");
+            q.add_class_item(j,"has-background-warning-light");
+            q.remove_class_item(j,"has-background-success-light");
         }
         for(var j in p.list){
-            p.add_class_item(j,"has-background-success-light");
-            p.remove_class_item(j,"has-background-danger-light");
+            p.add_class_item(j,"has-background-warning-light");
+            p.remove_class_item(j,"has-background-success-light");
         }
         
         for(var j = 0 ; j < boutons.length ;j++){
-            boutons[j].classList.add("has-background-success-light");
-            boutons[j].classList.remove("has-background-danger-light");
+            boutons[j].classList.add("has-background-warning-light");
+            boutons[j].classList.remove("has-background-success-light");
         }
-        document.querySelector("#btn_defiler").classList.add("is-success");
-        document.querySelector("#btn_defiler").classList.remove("is-danger");
+        document.querySelector("#btn_defiler").classList.add("is-warning");
+        document.querySelector("#btn_defiler").classList.remove("is-success");
     }
 }
 

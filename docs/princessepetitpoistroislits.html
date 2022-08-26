@@ -26,9 +26,9 @@
     </p>
     </div>
 </article>               
-<article class="message is-success" id="entete-message">
+<article class="message is-warning" id="entete-message">
     <div class="message-header">
-        <p id="message">Sauriez-vous reconstituter aider la princesse ?</p>
+        <p id="message">Sauriez-vous aider la princesse ?</p>
     </div>
     <div class="message-body" >
         <p class="block" id="consigne">Pour déplacer le matelas de dessus d'un lit à l'autre, cliquez sur le bouton situé au-dessus du lit de départ puis sur celui au-dessus du lit d'arrivée.
@@ -236,8 +236,8 @@ function deplacer(de,a){
 }
 function fin(){
     document.getElementById("consigne").innerHTML = "BRAVO ! Vous avez réussi en déplaçant "+deplacements+" matelas !";
-    document.getElementById("entete-message").classList.remove("is-success");
-    document.getElementById("entete-message").classList.add("is-danger");
+    document.getElementById("entete-message").classList.remove("is-warning");
+    document.getElementById("entete-message").classList.add("is-success");
         
     document.querySelector("#message").innerHTML = "Rechargez la page si vous voulez recommencer.";
     if(deplacements == Math.pow(2,liste_matelas.length)-1){

@@ -40,7 +40,7 @@
             
         </div>
         <div class="column">
-            <article class="message is-success" id="entete-message">
+            <article class="message" id="entete-message">
                 <div class="message-header"><p id="message">J'écrirai ici vos essais</p>
                 </div>
                 <div class="message-body" id="essais">
@@ -94,14 +94,12 @@ function verifier(elt){
     }
     if(liste_triee(l.list)){
         document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+permutations+" permutations !";
-        document.getElementById("entete-message").classList.remove("is-success");
-        document.getElementById("entete-message").classList.add("is-danger");
+        document.getElementById("entete-message").classList.add("is-success");
         
         //document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
     }else{
         document.getElementById("message").innerHTML = "Vos essais";
-        document.getElementById("entete-message").classList.add("is-success");
-        document.getElementById("entete-message").classList.remove("is-danger");
+        document.getElementById("entete-message").classList.remove("is-success");
     }
 }
 </script>

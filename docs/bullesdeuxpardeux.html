@@ -152,6 +152,8 @@ function actualiser_tableau(){
     }
     if(Math.max(...chiffres)==1){
         alert("C'est fini ! On ne peut plus regrouper de bulles.");
+        document.querySelector("article").classList.remove("is-info");
+        document.querySelector("article").classList.add("is-success");
     }
 
 }

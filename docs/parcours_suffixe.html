@@ -47,7 +47,7 @@
             </article>
         </div>
         <div class="column">
-            <article class="message is-success" id="entete-message">
+            <article class="message is-warning" id="entete-message">
                 <div class="message-header"><p>Votre liste</p></div>
                 <div class="message-body">
                     <p class="block" id="message" >
@@ -62,15 +62,13 @@
 <script>
 liste_animaux = ["🦑","🪲","🐼","🦊","🦆","🐯"];    //"🐼","🐸"];
 
-//liste_animaux = [1,2,3,4,,,7];
-
-let arbre = new BinaryTree(liste_animaux,{},{"click":"verifier(this);"});
+let arbre = new BinaryTree(liste_animaux,{"h_dist":60},{"click":"verifier(this);"});
 arbre.draw(document.querySelector("#arbre"));
 // calcul du parcours suffixe
 arbre.LRN(0);
 
 let prefixe = new List(arbre.LRN_list);
-let ta_liste = new List([],{},{"classes":["is-large","has-background-success-light"]});
+let ta_liste = new List([],{},{"classes":["is-large","has-background-warning-light"]});
 ta_liste.draw(document.querySelector("#liste"));
 let clics = [];
 
@@ -91,8 +89,6 @@ function selectionner(i){
     ta_liste.push(t);
     ta_liste.draw();
     clics.push(i);
-    //arbre.get_ellipse(i).setAttribute("stroke","black");
-    //arbre.get_ellipse(i).setAttribute("stroke-width","3");
     let r = Number(arbre.get_ellipse(i).getAttribute("rx"))*0.8;
     arbre.get_ellipse(i).setAttribute("rx",r);
     arbre.get_ellipse(i).setAttribute("ry",r);
@@ -101,8 +97,6 @@ function selectionner(i){
 }
 
 function deselectionner(i){
-    //arbre.get_ellipse(i).setAttribute("stroke","none");
-    //arbre.get_ellipse(i).setAttribute("stroke-width","0");
     let r = Number(arbre.get_ellipse(i).getAttribute("rx"))/0.8;
     arbre.get_ellipse(i).setAttribute("rx",r);
     arbre.get_ellipse(i).setAttribute("ry",r);
@@ -124,21 +118,20 @@ function verifier(evt){
     }
     if(ta_liste.is_equal_to(prefixe)){
         document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi !";
-        document.getElementById("entete-message").classList.remove("is-success");
-        document.getElementById("entete-message").classList.add("is-danger");
+        document.getElementById("entete-message").classList.remove("is-warning");
+        document.getElementById("entete-message").classList.add("is-success");
         for(var j in ta_liste.list){
-            ta_liste.remove_class_item(j,"has-background-success-light");
-            ta_liste.add_class_item(j,"has-background-danger-light");
+            ta_liste.remove_class_item(j,"has-background-warning-light");
+            ta_liste.add_class_item(j,"has-background-success-light");
         }
         
-        //document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
     }else{
         document.getElementById("message").innerHTML = "J'écrirai la liste des nœuds cliqués ci-dessous.";
-        document.getElementById("entete-message").classList.add("is-success");
-        document.getElementById("entete-message").classList.remove("is-danger");
+        document.getElementById("entete-message").classList.add("is-warning");
+        document.getElementById("entete-message").classList.remove("is-success");
         for(var j in ta_liste.list){
-            ta_liste.add_class_item(j,"has-background-success-light");
-            ta_liste.remove_class_item(j,"has-background-danger-light");
+            ta_liste.add_class_item(j,"has-background-warning-light");
+            ta_liste.remove_class_item(j,"has-background-success-light");
         }
     }
 }

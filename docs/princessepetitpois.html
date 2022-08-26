@@ -47,7 +47,7 @@
             </article>
         </div>
         <div class="column">
-            <article class="message is-success" id="entete-message">
+            <article class="message is-warning" id="entete-message">
                 <div class="message-header"><p id="message">À vous de jouer !</p>
                 </div>
                 <div class="message-body">
@@ -125,15 +125,15 @@ function verifier(elt){
         elt.target.parentNode.parentNode.addEventListener("transitionend",fin);
     }else{
         document.getElementById("message").innerHTML = "À vous de jouer";
-        document.getElementById("entete-message").classList.add("is-success");
-        document.getElementById("entete-message").classList.remove("is-danger");
+        document.getElementById("entete-message").classList.add("is-warning");
+        document.getElementById("entete-message").classList.remove("is-success");
     }
     
 }
 function fin(){
     document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi en "+essais+" essais en retournant "+retournements+" matelas !";
-    document.getElementById("entete-message").classList.remove("is-success");
-    document.getElementById("entete-message").classList.add("is-danger");
+    document.getElementById("entete-message").classList.remove("is-warning");
+    document.getElementById("entete-message").classList.add("is-success");
         
     document.querySelector("#consigne").innerHTML = "Rechargez la page si vous voulez recommencer.";
     document.querySelector("#lit").innerHTML =`<a title="Henry Justice Ford
