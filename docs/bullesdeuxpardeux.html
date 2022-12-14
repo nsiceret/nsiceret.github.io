@@ -28,7 +28,7 @@
             <div class="block">
                 <div class="content">
                     <input type="range" id="volume" name="total"
-                     min="1" max="31" value="17" width="350px"
+                     min="2" max="31" value="17" width="350px"
                      oninput = "init();"
                      >
                     <label for="total" id="total">17</label>
@@ -143,6 +143,8 @@ function init(){
         creer_x();
         creer_cercle(0,i,x,y);
     }
+    document.querySelector("article").classList.add("is-info");
+    document.querySelector("article").classList.remove("is-success");
     actualiser_tableau();
 }
 
@@ -168,7 +170,6 @@ function creer_x(){
         x = x + ecart;
     }
     document.querySelector("#box").setAttribute("height" ,y + ecart/2);
-    //return Math.floor(Math.random()*(largeur-20)/ecart)*ecart+10;
 }
 
 function gerer_chiffres(niveau){

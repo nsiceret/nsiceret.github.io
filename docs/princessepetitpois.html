@@ -111,6 +111,9 @@ function init(){
 
 
 function verifier(elt){
+    if(elt.target.parentNode.parentNode.dataset.animated){
+        return 0;  //if animated, don't animate
+    }
     const n = liste_matelas.length - Number(elt.target.parentNode.parentNode.dataset.number);    // le clic se passe sur le texte !! n est le nombre de matelas à retourner
     p.reverse(n);
     couleurs.reverse(n,{"draw":false});

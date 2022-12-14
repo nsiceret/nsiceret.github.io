@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Parcours en profondeur préfixe</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<script src="utils.js"></script>
+<style>
+    text{
+        color: hsl(217, 71%, 53%);
+        fill: hsl(217, 71%, 53%);
+        font-size: 150%;
+        text-anchor: "middle";
+    }
+    ellipse{
+        fill: hsl(0, 0%, 86%);
+        stroke: hsl(217, 71%, 53%);
+        stroke-width: 3;
+    }
+    .choisi{
+        stroke-width: 5;
+    }
+    .nonchoisi{
+        stroke-width: 3;
+    }
+    line{
+        stroke-width: 3;
+        fill: none;
+        stroke: hsl(217, 71%, 53%);
+    }
+</style>
+</head>
+<body>
+<section class="section">
+    <h1 class="title">Parcours préfixe d'un arbre binaire</h1>
+    <div class="columns">
+        <div class="column">
+            <article class="message is-info">
+                <div class="message-header"><p>Instructions</p></div>
+                <div class="message-body">
+                    <div class="block">
+                        Cliquez sur les nœuds de l'arbre binaire en suivant l'ordre du parcours préfixe. Vous pouvez revenir en arrière en cliquant à nouveau sur le dernier nœud sélectionné.
+                    </div>
+                    <div id="arbre" class="block content">
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="column">
+            <article class="message is-warning" id="entete-message">
+                <div class="message-header"><p>Votre liste</p></div>
+                <div class="message-body">
+                    <p class="block" id="message" >
+                        J'écrirai la liste des nœuds cliqués ci-dessous.
+                    </p>
+                    <p id="liste" class="block">
+                    </p>
+                </div>
+            </article>
+        </div>       
+</section>
+<script>
+liste_animaux = ["?","?","?","?",,,];
+
+//liste_animaux = [1,2,3,4,,,7];
+
+let arbre = new BinaryTree(liste_animaux,{"h_dist":60},{"click":"verifier(this);"});
+arbre.draw(document.querySelector("#arbre"));
+// calcul du parcours préfixe
+arbre.NLR(0);
+
+let prefixe = new List(arbre.NLR_list);
+let ta_liste = new List([],{},{"classes":["is-large","has-background-warning-light"]});
+ta_liste.draw(document.querySelector("#liste"));
+let clics = [];
+
+function gerer_cliquable(){
+    for(var i in clics){
+        if(i < clics.length-1){
+            arbre.get_node(clics[i]).removeAttribute("onclick");
+            arbre.get_node(clics[i]).classList.remove('is-clickable');
+        }else{
+            arbre.get_node(clics[i]).setAttribute("onclick","verifier(this);");
+            arbre.get_node(clics[i]).classList.add('is-clickable');
+        }
+    }
+}
+
+function selectionner(i){
+    let t = arbre.get_text(i).innerHTML;
+    ta_liste.push(t);
+    ta_liste.draw();
+    clics.push(i);
+    let r = Number(arbre.get_ellipse(i).getAttribute("rx"))*0.8;
+    arbre.get_ellipse(i).setAttribute("rx",r);
+    arbre.get_ellipse(i).setAttribute("ry",r);
+    arbre.get_ellipse(i).classList.toggle("choisi");
+    gerer_cliquable();
+}
+
+function deselectionner(i){
+    let r = Number(arbre.get_ellipse(i).getAttribute("rx"))/0.8;
+    arbre.get_ellipse(i).setAttribute("rx",r);
+    arbre.get_ellipse(i).setAttribute("ry",r);
+    arbre.get_ellipse(i).classList.toggle("choisi");
+    ta_liste.pop();
+    ta_liste.draw();
+    clics.pop();
+    gerer_cliquable();
+}
+
+function verifier(evt){
+    let i = evt.dataset.index;
+    if(clics.length == 0){
+        selectionner(i);
+    }else if(clics[clics.length-1] == i){
+        deselectionner(i);
+    }else{
+        selectionner(i);
+    }
+    if(ta_liste.is_equal_to(prefixe)){
+        document.getElementById("message").innerHTML = "BRAVO ! Vous avez réussi !";
+        document.getElementById("entete-message").classList.remove("is-warning");
+        document.getElementById("entete-message").classList.add("is-success");
+        for(var j in ta_liste.list){
+            ta_liste.remove_class_item(j,"has-background-warning-light");
+            ta_liste.add_class_item(j,"has-background-success-light");
+        }
+    }else{
+        document.getElementById("message").innerHTML = "J'écrirai la liste des nœuds cliqués ci-dessous.";
+        document.getElementById("entete-message").classList.add("is-warning");
+        document.getElementById("entete-message").classList.remove("is-success");
+        for(var j in ta_liste.list){
+            ta_liste.add_class_item(j,"has-background-warning-light");
+            ta_liste.remove_class_item(j,"has-background-success-light");
+        }
+    }
+}
+</script>
+</body>
+</html>

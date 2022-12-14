@@ -330,10 +330,12 @@ class Stack extends ADT{
                 child.style.transform ="translateY("+dys[i]+"px)";
                 child.dataset.y = dys[i];
                 child.dataset.k = k;
+                child.dataset.animated = true;  //delete click during animation
                 child.addEventListener("transitionend",endTransition);
             }
             function endTransition(e) {
                 e.target.dataset.number = e.target.dataset.k;
+                e.target.dataset.animated = "";  //falsy
             }
             
         }
